@@ -2,11 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Sempre manter espaço para scrollbar */
+html,
+body {
+  scrollbar-gutter: stable;
+}
+
 /* Animações personalizadas */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }

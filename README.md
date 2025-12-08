@@ -1,75 +1,221 @@
-# React + TypeScript + Vite
+# 🎮 Pokédex Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Uma aplicação web moderna e interativa para explorar dados dos 151 Pokémon da primeira geração. Desenvolvida como projeto acadêmico para a disciplina de Banco de Dados na **UFERSA**.
 
-Currently, two official plugins are available:
+<div align="center">
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-18+-blue.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue.svg)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3+-38B2AC.svg)
+![Vite](https://img.shields.io/badge/Vite-5+-purple.svg)
 
-## React Compiler
+</div>
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+---
 
-Note: This will impact Vite dev & build performances.
+## ✨ Características
 
-## Expanding the ESLint configuration
+### 🔍 Busca Inteligente
+- Busque Pokémon pelo **nome** ou **número da Pokédex**
+- Busca em tempo real com resultado instantâneo
+- Barra de pesquisa sticky com backdrop blur
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🏷️ Filtro por Tipo
+- 15 tipos elementais diferentes (Gen 1)
+- Visualização visual com ícones e cores específicas
+- Filtragem dinâmica e responsiva
+- Suporte completo a português
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📋 Informações Detalhadas
+- **Modal interativo** com detalhes completos do Pokémon
+- Altura e peso
+- Fraquezas e tipos
+- **Cadeia de evolução** com navegação interativa
+- Imagens de alta qualidade do Serebii
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🎨 Design Responsivo
+- Interface moderna e intuitiva
+- Totalmente responsivo (mobile-first)
+- Animações suaves e transições
+- Tema claro com cores temáticas por tipo
+- Barra de scroll sempre visível
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🚀 Tecnologias Utilizadas
+
+| Tecnologia | Descrição |
+|-----------|-----------|
+| **React 18** | Framework para UI com hooks |
+| **TypeScript** | Type-safety completo |
+| **Tailwind CSS** | Estilização utility-first |
+| **Vite** | Build tool moderno |
+| **Lucide React** | Ícones vectorizados |
+| **gh-pages** | Deploy automático |
+
+---
+
+## 🏗️ Arquitetura
+
+### Componentes Principais
+
+- **Header**: Navegação sticky com logo e menu
+- **FilterDock**: Barra de busca sticky
+- **Home**: Grid responsivo de Pokémon
+- **TypesPage**: Visualização por tipo elemental
+- **PokemonModal**: Modal detalhado com evolução
+- **TypeBadge**: Badge interativo de tipo
+- **Footer**: Rodapé com informações
+
+### Estado Global
+
+```typescript
+- view: 'home' | 'types' | 'about'
+- searchTerm: string
+- selectedPokemon: Pokemon | null
+- filteredPokemon: Pokemon[]
+- allTypes: string[]
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 💡 Funcionalidades Principais
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1️⃣ Busca de Pokémon
+- Busca por nome (case-insensitive)
+- Busca por número Pokédex
+- Atualização em tempo real
+
+### 2️⃣ Filtro por Tipo
+- 15 tipos com cores e ícones únicos
+- Visualização de Pokémon por tipo
+- Navegação intuitiva
+
+### 3️⃣ Modal de Detalhes
+- Imagem grande e ampliada
+- Tipos, altura e peso
+- Cadeia completa de evolução
+- Clique para navegar entre evoluções
+
+### 4️⃣ Responsividade
+- Mobile: 1 coluna
+- Tablet: 2-3 colunas
+- Desktop: 4-5 colunas
+- Modal otimizado para todos os tamanhos
+
+---
+
+## 📦 Dataset
+
+### Estrutura de Pokémon
+
+```typescript
+{
+  id: number;                    // ID único
+  num: string;                   // Número Pokédex (001-151)
+  name: string;                  // Nome
+  img: string;                   // URL da imagem Serebii
+  type: string[];                // Tipos (1-2)
+  height: string;                // Altura
+  weight: string;                // Peso
+  weaknesses: string[];          // Fraquezas de tipo
+  prev_evolution?: EvolutionRef[];
+  next_evolution?: EvolutionRef[];
+}
 ```
+
+### Tipos Suportados (15)
+Grass, Poison, Fire, Flying, Water, Bug, Normal, Electric, Ground, Rock, Psychic, Fighting, Ice, Ghost, Dragon, Steel and Fairy
+
+---
+
+## 🔧 Instalação e Uso
+
+### Pré-requisitos
+- Node.js 16+
+- npm ou yarn
+
+### Setup
+
+```bash
+# Clone o repositório
+git clone https://github.com/gabrdsp/pokedex-pro.git
+cd pokedex-pro
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+
+# Deploy para GitHub Pages
+npm run deploy
+```
+
+### Scripts Disponíveis
+
+```bash
+npm run dev      # Servidor Vite em desenvolvimento
+npm run build    # Build para produção
+npm run preview  # Visualiza build localmente
+npm run deploy   # Build + Deploy GitHub Pages
+```
+
+---
+
+## 🌍 Deploy
+
+Hospedado no GitHub Pages:
+```
+https://gabrdsp.github.io/pokedex-pro
+```
+
+---
+
+## 🎓 Contexto Acadêmico
+
+Desenvolvido para a disciplina de **Banco de Dados** na **UFERSA** (Universidade Federal Rural do Semi-Árido).
+
+### Objetivos Alcançados
+- ✅ Estruturação de dados em JSON
+- ✅ Filtros e buscas eficientes
+- ✅ Interface responsiva e moderna
+- ✅ Tratamento de erros
+- ✅ Deploy em produção
+
+---
+
+## 📄 Licença
+
+Projeto fan-made sem fins lucrativos. Pokémon é uma propriedade de The Pokémon Company, Nintendo e Game Freak.
+
+Código licenciado sob MIT.
+
+---
+
+## 🙏 Agradecimentos
+
+- **Serebii** pelos recursos de imagens
+- **UFERSA** pelo aprendizado
+
+---
+
+## 🔗 Links
+
+- [GitHub](https://github.com/gabrdsp/pokedex-pro)
+- [Live Demo](https://gabrdsp.github.io/pokedex-pro)
+- [Serebii Pokédex](https://www.serebii.net)
+
+---
+
+<div align="center">
+
+**Feito com dedicação e carinho 💙**
+
+*Uma Pokédex para explorar, aprender e se divertir!* 🎮✨
+
+</div>

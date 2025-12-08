@@ -49,8 +49,8 @@ const POKEMON_DATA = {
     { "id": 36, "num": "036", "name": "Clefable", "img": "https://www.serebii.net/pokemon/art/036.png", "type": ["Fairy"], "height": "1.30 m", "weight": "40.0 kg", "candy": "Clefairy Candy", "egg": "Not in Eggs", "spawn_chance": 0.012, "avg_spawns": 1.2, "spawn_time": "03:29", "multipliers": null, "weaknesses": ["Fighting"], "prev_evolution": [{ "num": "035", "name": "Clefairy" }] },
     { "id": 37, "num": "037", "name": "Vulpix", "img": "https://www.serebii.net/pokemon/art/037.png", "type": ["Fire"], "height": "0.61 m", "weight": "9.9 kg", "candy": "Vulpix Candy", "candy_count": 50, "egg": "5 km", "spawn_chance": 0.22, "avg_spawns": 22, "spawn_time": "13:43", "multipliers": [2.74, 2.81], "weaknesses": ["Water", "Ground", "Rock"], "next_evolution": [{ "num": "038", "name": "Ninetales" }] },
     { "id": 38, "num": "038", "name": "Ninetales", "img": "https://www.serebii.net/pokemon/art/038.png", "type": ["Fire"], "height": "1.09 m", "weight": "19.9 kg", "candy": "Vulpix Candy", "egg": "Not in Eggs", "spawn_chance": 0.0077, "avg_spawns": 0.77, "spawn_time": "01:32", "multipliers": null, "weaknesses": ["Water", "Ground", "Rock"], "prev_evolution": [{ "num": "037", "name": "Vulpix" }] },
-    { "id": 39, "num": "039", "name": "Jigglypuff", "img": "https://www.serebii.net/pokemon/art/039.png", "type": ["Fairy"], "height": "0.51 m", "weight": "5.5 kg", "candy": "Jigglypuff Candy", "candy_count": 50, "egg": "2 km", "spawn_chance": 0.39, "avg_spawns": 39, "spawn_time": "08:46", "multipliers": [1.85], "weaknesses": ["Fighting"], "next_evolution": [{ "num": "040", "name": "Wigglytuff" }] },
-    { "id": 40, "num": "040", "name": "Wigglytuff", "img": "https://www.serebii.net/pokemon/art/040.png", "type": ["Fairy"], "height": "0.99 m", "weight": "12.0 kg", "candy": "Jigglypuff Candy", "egg": "Not in Eggs", "spawn_chance": 0.018, "avg_spawns": 1.8, "spawn_time": "12:28", "multipliers": null, "weaknesses": ["Fighting"], "prev_evolution": [{ "num": "039", "name": "Jigglypuff" }] },
+    { "id": 39, "num": "039", "name": "Jigglypuff", "img": "https://www.serebii.net/pokemon/art/039.png", "type": ["Normal", "Fairy"], "height": "0.51 m", "weight": "5.5 kg", "candy": "Jigglypuff Candy", "candy_count": 50, "egg": "2 km", "spawn_chance": 0.39, "avg_spawns": 39, "spawn_time": "08:46", "multipliers": [1.85], "weaknesses": ["Fighting"], "next_evolution": [{ "num": "040", "name": "Wigglytuff" }] },
+    { "id": 40, "num": "040", "name": "Wigglytuff", "img": "https://www.serebii.net/pokemon/art/040.png", "type": ["Normal", "Fairy"], "height": "0.99 m", "weight": "12.0 kg", "candy": "Jigglypuff Candy", "egg": "Not in Eggs", "spawn_chance": 0.018, "avg_spawns": 1.8, "spawn_time": "12:28", "multipliers": null, "weaknesses": ["Fighting"], "prev_evolution": [{ "num": "039", "name": "Jigglypuff" }] },
     { "id": 41, "num": "041", "name": "Zubat", "img": "https://www.serebii.net/pokemon/art/041.png", "type": ["Poison", "Flying"], "height": "0.79 m", "weight": "7.5 kg", "candy": "Zubat Candy", "candy_count": 50, "egg": "2 km", "spawn_chance": 6.52, "avg_spawns": 652, "spawn_time": "12:28", "multipliers": [2.6, 3.67], "weaknesses": ["Electric", "Ice", "Psychic", "Rock"], "next_evolution": [{ "num": "042", "name": "Golbat" }] },
     { "id": 42, "num": "042", "name": "Golbat", "img": "https://www.serebii.net/pokemon/art/042.png", "type": ["Poison", "Flying"], "height": "1.60 m", "weight": "55.0 kg", "candy": "Zubat Candy", "egg": "Not in Eggs", "spawn_chance": 0.42, "avg_spawns": 42, "spawn_time": "02:15", "multipliers": null, "weaknesses": ["Electric", "Ice", "Psychic", "Rock"], "prev_evolution": [{ "num": "041", "name": "Zubat" }] },
     { "id": 43, "num": "043", "name": "Oddish", "img": "https://www.serebii.net/pokemon/art/043.png", "type": ["Grass", "Poison"], "height": "0.51 m", "weight": "5.4 kg", "candy": "Oddish Candy", "candy_count": 25, "egg": "5 km", "spawn_chance": 1.02, "avg_spawns": 102, "spawn_time": "03:58", "multipliers": [1.5], "weaknesses": ["Fire", "Ice", "Flying", "Psychic"], "next_evolution": [{ "num": "044", "name": "Gloom" }, { "num": "045", "name": "Vileplume" }] },
@@ -226,8 +226,8 @@ const TYPE_TRANSLATIONS: Record<string, string> = {
   Fairy: 'Fada',
 };
 
-const getTypeStyles = (type) => TYPE_COLORS[type] || 'bg-gray-100 text-gray-500 border-gray-200';
-const getTypeIcon = (type) => TYPE_ICONS[type] || CircleDot;
+const getTypeStyles = (type: string): string => TYPE_COLORS[type as keyof typeof TYPE_COLORS] || 'bg-gray-100 text-gray-500 border-gray-200';
+const getTypeIcon = (type: string) => TYPE_ICONS[type as keyof typeof TYPE_ICONS] || CircleDot;
 
 // --- COMPONENTES ---
 
@@ -338,11 +338,6 @@ const PokemonModal = ({ pokemon, onClose, onSelect, allPokemon }: { pokemon: any
 
   const findEvolution = (ref: any) => allPokemon.find((p: any) => p.num === ref.num);
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; }
-  }, []);
-
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
@@ -357,7 +352,7 @@ const PokemonModal = ({ pokemon, onClose, onSelect, allPokemon }: { pokemon: any
           </div>
           <img src={pokemon.img} alt={pokemon.name} className="relative z-10 w-56 h-56 object-contain drop-shadow-xl" />
           <div className="flex gap-4 mt-8 relative z-10">
-            {pokemon.type.map((t) => (
+            {pokemon.type.map((t: string) => (
               <div key={t} className="flex flex-col items-center gap-2">
                 <TypeBadge type={t} size="lg" />
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t}</span>
@@ -384,7 +379,7 @@ const PokemonModal = ({ pokemon, onClose, onSelect, allPokemon }: { pokemon: any
           <div className="mb-8">
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Fraquezas</h3>
             <div className="flex flex-wrap gap-3">
-              {pokemon.weaknesses.map(w => (
+              {pokemon.weaknesses.map((w: string) => (
                 <div key={w} className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
                   <TypeBadge type={w} size="sm" />
                   <span className="text-sm font-medium text-slate-600">{w}</span>
@@ -396,7 +391,7 @@ const PokemonModal = ({ pokemon, onClose, onSelect, allPokemon }: { pokemon: any
             <div>
               <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Cadeia de Evolução</h3>
               <div className="flex items-center gap-4 overflow-x-auto pb-2">
-                {pokemon.prev_evolution?.map(prev => {
+                {pokemon.prev_evolution?.map((prev: any) => {
                   const pData = findEvolution(prev);
                   return (
                     <div
@@ -423,7 +418,7 @@ const PokemonModal = ({ pokemon, onClose, onSelect, allPokemon }: { pokemon: any
                   <span className="text-xs font-bold text-blue-600">{pokemon.name}</span>
                 </div>
 
-                {pokemon.next_evolution?.map(next => {
+                {pokemon.next_evolution?.map((next: any) => {
                   const pData = findEvolution(next);
                   return (
                     <div
@@ -486,12 +481,12 @@ const Home = ({ searchTerm, setSearchTerm, filteredPokemon, onPokemonClick }: { 
   </main>
 );
 
-const TypesPage = ({ allTypes, allPokemon, onPokemonClick }) => {
-  const [selectedType, setSelectedType] = useState(null);
+const TypesPage = ({ allTypes: _, allPokemon, onPokemonClick }: { allTypes: string[]; allPokemon: any[]; onPokemonClick: (p: any) => void }) => {
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   const filteredByType = useMemo(() => {
     if (!selectedType) return [];
-    return allPokemon.filter(p => p.type.includes(selectedType));
+    return allPokemon.filter((p: any) => p.type.includes(selectedType));
   }, [selectedType, allPokemon]);
 
   if (selectedType) {
@@ -511,7 +506,7 @@ const TypesPage = ({ allTypes, allPokemon, onPokemonClick }) => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {filteredByType.map(pokemon => (
+          {filteredByType.map((pokemon: any) => (
             <PokemonCard key={pokemon.id} pokemon={pokemon} onClick={onPokemonClick} />
           ))}
         </div>
@@ -525,7 +520,7 @@ const TypesPage = ({ allTypes, allPokemon, onPokemonClick }) => {
       <p className="text-slate-400 mb-12">Selecione um elemento para ver todos os Pokémon desse tipo.</p>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 max-w-5xl mx-auto">
-        {Object.keys(TYPE_COLORS).map(type => (
+        {Object.keys(TYPE_COLORS).map((type: string) => (
           <div
             key={type}
             className="flex flex-col items-center gap-3 group cursor-pointer"
@@ -584,10 +579,10 @@ const App = () => {
     // Filter only standard gen 1 types if desired, or keep all from data
     const standardTypes = ["Grass", "Poison", "Fire", "Flying", "Water", "Bug", "Normal", "Electric", "Ground", "Rock", "Psychic", "Fighting", "Ice", "Ghost", "Dragon"];
     // Or dynamic:
-    const types = new Set();
+    const types = new Set<string>();
     POKEMON_DATA.pokemons.forEach(p => p.type.forEach(t => types.add(t)));
     // Intersection to ensure 15 types grid or just sort
-    return Array.from(types).filter(t => standardTypes.includes(t)).sort((a, b) => standardTypes.indexOf(a) - standardTypes.indexOf(b));
+    return Array.from(types).filter((t: string) => standardTypes.includes(t)).sort((a: string, b: string) => standardTypes.indexOf(a) - standardTypes.indexOf(b));
   }, []);
 
   useEffect(() => {
