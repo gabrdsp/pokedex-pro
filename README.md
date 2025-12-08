@@ -125,7 +125,7 @@ Uma aplicação web moderna e interativa para explorar dados dos 151 Pokémon da
 }
 ```
 
-### Tipos Suportados (15)
+### Tipagens
 🍃 Grass 💀 Poison 🔥 Fire ☁ Flying 🌊 Water 🐛 Bug ⚪ Normal ⚡ Electric ⛰️ Ground 🪨 Rock 🧠 Psychic 🥊 Fighting ❄ Ice 👻 Ghost 🐉 Dragon ⚙️ Steel 🦋 Fairy
 
 ---
