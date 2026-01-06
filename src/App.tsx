@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import iconPng from "./assets/icon.png";
 import {
   Search,
@@ -12,7 +12,10 @@ import {
   Check,
   Trash2,
   Users,
+  Download,
 } from "lucide-react";
+
+import html2canvas from "html2canvas";
 
 import { REGIONS, type RegionKey } from "./data/regions";
 import { getRegionPokemons } from "./lib/pokemon";
@@ -66,11 +69,13 @@ const extractIdFromUrl = (url?: string): number | null => {
 const toSerebiiImg = (id: number) =>
   `https://www.serebii.net/pokemon/art/${pad3(id)}.png`;
 
+// Placeholder (pokeball PNG)
+const POKEBALL_PLACEHOLDER =
+  "https://www.kindpng.com/picc/m/604-6046492_pokeball-png-free-download-circle-transparent-png.png";
+
 // ------------------------
 // Tipos: descrição
 // ------------------------
-
-// NOVO: mapa de imagens para os 18 tipos
 const TYPE_IMAGES: Record<string, string> = {
   Grass: GO_Grass,
   Poison: GO_Poison,
@@ -157,23 +162,36 @@ const TYPE_DESCRIPTIONS: Record<string, string> = {
 // ------------------------
 const REGION_GRADIENTS: Record<RegionKey, string> = {
   kanto:
-    "from-emerald-400 via-teal-400 to-cyan-400 hover:from-emerald-500 hover:via-teal-500 hover:to-cyan-500",
+    "from-red-400 via-yellow-400 to-blue-400 hover:from-red-500 hover:via-yellow-500 hover:to-blue-500",
   johto:
-    "from-amber-400 via-orange-400 to-rose-400 hover:from-amber-500 hover:via-orange-500 hover:to-rose-500",
+    "from-amber-400 via-slate-300 to-zinc-400 hover:from-amber-500 hover:via-slate-400 hover:to-zinc-500",
   hoenn:
-    "from-sky-400 via-blue-400 to-indigo-400 hover:from-sky-500 hover:via-blue-500 hover:to-indigo-500",
+    "from-blue-400 via-green-300 to-rose-500 hover:from-blue-500 hover:via-green-300 hover:to-rose-600",
   sinnoh:
-    "from-indigo-400 via-violet-400 to-fuchsia-400 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500",
+    "from-sky-400 via-indigo-300 to-pink-400 hover:from-sky-500 hover:via-indigo-400 hover:to-pink-500",
   unova:
-    "from-slate-400 via-zinc-400 to-stone-400 hover:from-slate-500 hover:via-zinc-500 hover:to-stone-500",
+    "from-zinc-900 via-zinc-600 to-zinc-300 hover:from-black hover:via-zinc-700 hover:to-zinc-400",
   kalos:
-    "from-pink-400 via-fuchsia-400 to-violet-400 hover:from-pink-500 hover:via-fuchsia-500 hover:to-violet-500",
+    "from-blue-500 via-slate-300 to-red-500 hover:from-blue-600 hover:via-slate-400 hover:to-red-600",
   alola:
-    "from-teal-400 via-emerald-400 to-lime-400 hover:from-teal-500 hover:via-emerald-500 hover:to-lime-500",
+    "from-orange-400 via-amber-300 to-purple-400 hover:from-orange-500 hover:via-amber-400 hover:to-purple-500",
   galar:
-    "from-violet-400 via-purple-400 to-indigo-400 hover:from-violet-500 hover:via-purple-500 hover:to-indigo-500",
+    "from-sky-400 via-cyan-300 to-pink-400 hover:from-sky-500 hover:via-cyan-400 hover:to-pink-500",
   paldea:
-    "from-rose-400 via-pink-400 to-amber-400 hover:from-rose-500 hover:via-pink-500 hover:to-amber-500",
+    "from-red-500 via-fuchsia-400 to-violet-500 hover:from-red-600 hover:via-fuchsia-500 hover:to-violet-600",
+};
+
+// Gradiente sutil para “faixa” do header (easter egg)
+const REGION_HEADER_STRIP: Record<RegionKey, string> = {
+  kanto: "from-red-400 via-yellow-400 to-blue-400",
+  johto: "from-amber-400 via-slate-300 to-zinc-400",
+  hoenn: "from-blue-400 via-green-300 to-rose-500",
+  sinnoh: "from-sky-400 via-indigo-300 to-pink-400",
+  unova: "from-zinc-900 via-zinc-600 to-zinc-300",
+  kalos: "from-blue-500 via-slate-300 to-red-500",
+  alola: "from-orange-400 via-amber-300 to-purple-400",
+  galar: "from-sky-400 via-cyan-300 to-pink-400",
+  paldea: "from-red-500 via-fuchsia-400 to-violet-500",
 };
 
 // ------------------------
@@ -194,10 +212,10 @@ const TypeBadge = ({
     size === "lg"
       ? "w-16 h-16 p-4"
       : size === "xl"
-      ? "w-24 h-24 p-6"
-      : size === "sm"
-      ? "w-7 h-7 p-1"
-      : "w-10 h-10 p-2";
+        ? "w-24 h-24 p-6"
+        : size === "sm"
+          ? "w-7 h-7 p-1"
+          : "w-10 h-10 p-2";
 
   return (
     <div
@@ -271,14 +289,59 @@ const PokemonCard = ({
   </div>
 );
 
+const SkeletonPokemonCard = () => (
+  <div
+    className={[
+      "relative overflow-hidden h-full",
+      "rounded-3xl border border-white/60 bg-white/70 backdrop-blur-xl",
+      "shadow-[0_12px_30px_rgba(15,23,42,0.06)]",
+      "p-6 flex flex-col items-center justify-between",
+      "animate-pulse",
+    ].join(" ")}
+  >
+    <div className="pointer-events-none absolute -top-24 -right-24 w-56 h-56 rounded-full bg-slate-200/40 blur-2xl opacity-60" />
+    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-white/25" />
+
+    <div className="relative z-10 self-end w-14 h-4 rounded bg-slate-200/60" />
+
+    <div className="relative z-10 w-32 h-32 my-4 rounded-3xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+      <img
+        src={POKEBALL_PLACEHOLDER}
+        alt="Placeholder"
+        className="w-14 h-14 opacity-60"
+      />
+    </div>
+
+    <div className="relative z-10 w-full flex flex-col items-center gap-3">
+      <div className="w-28 h-5 rounded bg-slate-200/60" />
+      <div className="flex gap-2">
+        <div className="w-10 h-10 rounded-full bg-slate-200/60" />
+        <div className="w-10 h-10 rounded-full bg-slate-200/60" />
+      </div>
+    </div>
+  </div>
+);
+
 const Header = ({
   setView,
   currentView,
+  regionKeyForEasterEgg,
 }: {
   setView: (v: "region" | "home" | "types" | "about" | "team") => void;
   currentView: "region" | "home" | "types" | "about" | "team";
+  regionKeyForEasterEgg?: RegionKey;
 }) => (
   <header className="sticky top-0 z-50 border-b border-white/60 bg-white/70 backdrop-blur-xl">
+    {/* Easter egg sutil: faixa gradiente muda conforme a região (somente quando informado) */}
+    {regionKeyForEasterEgg && (
+      <div
+        className={[
+          "h-[3px] w-full bg-gradient-to-r opacity-70",
+          REGION_HEADER_STRIP[regionKeyForEasterEgg],
+        ].join(" ")}
+      />
+    )}
+
     <div className="container mx-auto px-6 h-16 flex items-center justify-center">
       <nav className="flex items-center justify-center gap-2 text-sm font-extrabold text-slate-600">
         <button
@@ -350,6 +413,101 @@ const FilterDock = ({
     </div>
   </div>
 );
+
+// ------------------------
+// Easter egg background por geração (sutil, sem poluir)
+// ------------------------
+const RegionEasterEgg = ({ regionKey }: { regionKey: RegionKey }) => {
+  const egg = useMemo(() => {
+    switch (regionKey) {
+      case "kanto":
+        return {
+          a: "bg-red-200/25",
+          b: "bg-yellow-200/20",
+          c: "bg-blue-200/20",
+          d: "bg-emerald-200/18",
+        };
+      case "johto":
+        return {
+          a: "bg-amber-200/22",
+          b: "bg-slate-200/18",
+          c: "bg-zinc-200/16",
+          d: "bg-amber-100/16",
+        };
+      case "hoenn":
+        return {
+          a: "bg-blue-200/22",
+          b: "bg-emerald-200/18",
+          c: "bg-rose-200/18",
+          d: "bg-sky-200/16",
+        };
+      case "sinnoh":
+        return {
+          a: "bg-sky-200/22",
+          b: "bg-indigo-200/18",
+          c: "bg-pink-200/18",
+          d: "bg-violet-200/16",
+        };
+      case "unova":
+        return {
+          a: "bg-zinc-300/18",
+          b: "bg-zinc-200/14",
+          c: "bg-zinc-400/12",
+          d: "bg-zinc-100/12",
+        };
+      case "kalos":
+        return {
+          a: "bg-blue-200/22",
+          b: "bg-red-200/18",
+          c: "bg-slate-200/16",
+          d: "bg-indigo-200/14",
+        };
+      case "alola":
+        return {
+          a: "bg-orange-200/22",
+          b: "bg-amber-200/18",
+          c: "bg-purple-200/18",
+          d: "bg-pink-200/12",
+        };
+      case "galar":
+        return {
+          a: "bg-sky-200/22",
+          b: "bg-cyan-200/18",
+          c: "bg-pink-200/18",
+          d: "bg-indigo-200/12",
+        };
+      case "paldea":
+        return {
+          a: "bg-red-200/18",
+          b: "bg-fuchsia-200/18",
+          c: "bg-violet-200/16",
+          d: "bg-amber-200/12",
+        };
+      default:
+        return {
+          a: "bg-cyan-200/20",
+          b: "bg-fuchsia-200/18",
+          c: "bg-amber-200/16",
+          d: "bg-sky-200/12",
+        };
+    }
+  }, [regionKey]);
+
+  return (
+    <div className="pointer-events-none fixed inset-0 overflow-hidden">
+      {/* blobs principais (já existiam) */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-cyan-200/30 blur-3xl" />
+      <div className="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-fuchsia-200/25 blur-3xl" />
+      <div className="absolute -bottom-24 left-1/3 w-96 h-96 rounded-full bg-amber-200/25 blur-3xl" />
+
+      {/* partículas/bolhas sutis por região */}
+      <div className={["absolute top-24 left-[12%] w-20 h-20 rounded-full blur-2xl", egg.a].join(" ")} />
+      <div className={["absolute top-[28%] right-[14%] w-16 h-16 rounded-full blur-2xl", egg.b].join(" ")} />
+      <div className={["absolute bottom-[18%] left-[22%] w-24 h-24 rounded-full blur-3xl", egg.c].join(" ")} />
+      <div className={["absolute bottom-[10%] right-[26%] w-14 h-14 rounded-full blur-2xl", egg.d].join(" ")} />
+    </div>
+  );
+};
 
 // ------------------------
 // Tela: Seleção de Região
@@ -464,19 +622,16 @@ const Home = ({
 
     <div className="text-center mb-8">
       <span className="inline-flex items-center gap-2 bg-white/75 px-4 py-2 rounded-full text-xs font-extrabold text-slate-600 border border-white/60 shadow-sm">
-        {isLoading ? "Carregando..." : `${filteredPokemon.length} Pokémon`}
+        {isLoading ? "Carregando Pokémons..." : `${filteredPokemon.length} Pokémon`}
       </span>
     </div>
 
+    {/* Skeleton grid (substitui “Carregando…”) */}
     {isLoading ? (
-      <div className="flex flex-col items-center justify-center py-24 text-slate-500">
-        <div className="w-16 h-16 bg-white/80 border border-white/60 rounded-full flex items-center justify-center mb-4 shadow-sm">
-          <Search size={22} />
-        </div>
-        <p className="font-bold">Buscando dados da região…</p>
-        <p className="text-xs mt-2 text-slate-400">
-          Primeiro carregamento pode levar alguns segundos.
-        </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <SkeletonPokemonCard key={i} />
+        ))}
       </div>
     ) : (
       <>
@@ -524,10 +679,243 @@ const TeamBuilder = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
+    // NOVO: estatísticas + download do card
+  const [showStats, setShowStats] = useState(false);
+  const [isDownloadingCard, setIsDownloadingCard] = useState(false);
+  const teamCardRef = useRef<HTMLDivElement | null>(null);
+
+    const teamStats = useMemo(() => {
+    const typeCount = new Map<string, number>();
+    const weaknessCount = new Map<string, number>();
+
+    for (const p of team) {
+      for (const t of p.type || []) {
+        typeCount.set(t, (typeCount.get(t) || 0) + 1);
+      }
+      for (const w of p.weaknesses || []) {
+        weaknessCount.set(w, (weaknessCount.get(w) || 0) + 1);
+      }
+    }
+
+    const typesSorted = Array.from(typeCount.entries()).sort((a, b) => b[1] - a[1]);
+    const weaknessesSorted = Array.from(weaknessCount.entries()).sort((a, b) => b[1] - a[1]);
+
+    const teamTypesSet = new Set(typeCount.keys());
+
+    // Heurísticas simples de “como reduzir fraqueza”
+    // (não é um type-chart completo, mas cobre os casos mais intuitivos)
+    const WEAKNESS_FIX: Record<
+      string,
+      { add: string[]; note: string }
+    > = {
+      Electric: {
+        add: ["Ground"],
+        note: "Ground é imune a golpes Elétricos.",
+      },
+      Ground: {
+        add: ["Water", "Grass", "Ice"],
+        note: "Esses tipos costumam responder bem a golpes Terrestres.",
+      },
+      Rock: {
+        add: ["Water", "Grass", "Fighting", "Ground", "Steel"],
+        note: "Esses tipos ajudam a lidar com adversários do tipo Pedra.",
+      },
+      Fire: {
+        add: ["Water", "Ground", "Rock"],
+        note: "Boa resposta contra equipes focadas em Fogo.",
+      },
+      Water: {
+        add: ["Electric", "Grass"],
+        note: "Cobertura clássica contra Água.",
+      },
+      Grass: {
+        add: ["Fire", "Ice", "Flying", "Bug", "Poison"],
+        note: "Boas opções para enfrentar Grama.",
+      },
+      Ice: {
+        add: ["Fire", "Fighting", "Rock", "Steel"],
+        note: "Tipos fortes contra Gelo.",
+      },
+      Fighting: {
+        add: ["Flying", "Psychic", "Fairy"],
+        note: "Cobertura típica contra Lutador.",
+      },
+      Psychic: {
+        add: ["Bug", "Ghost", "Dark"],
+        note: "Esses tipos ajudam a enfrentar Psíquico.",
+      },
+      Dark: {
+        add: ["Fighting", "Bug", "Fairy"],
+        note: "Boa resposta contra Sombrio.",
+      },
+      Dragon: {
+        add: ["Ice", "Fairy", "Dragon"],
+        note: "Respostas tradicionais contra Dragão.",
+      },
+      Fairy: {
+        add: ["Steel", "Poison"],
+        note: "Tipos fortes contra Fada.",
+      },
+      Ghost: {
+        add: ["Dark", "Ghost"],
+        note: "Boa resposta contra Fantasma.",
+      },
+      Bug: {
+        add: ["Fire", "Flying", "Rock"],
+        note: "Cobertura comum contra Inseto.",
+      },
+      Poison: {
+        add: ["Ground", "Psychic"],
+        note: "Boa resposta contra Veneno.",
+      },
+      Steel: {
+        add: ["Fire", "Fighting", "Ground"],
+        note: "Cobertura comum contra Metal.",
+      },
+      Flying: {
+        add: ["Electric", "Ice", "Rock"],
+        note: "Cobertura comum contra Voador.",
+      },
+      Normal: {
+        add: ["Fighting"],
+        note: "Resposta clássica contra Normal.",
+      },
+    };
+
+    // Sugestões com JSX (ícones)
+    const suggestions: JSX.Element[] = [];
+
+    const pushTip = (key: string, el: JSX.Element) => {
+      // evita duplicações grosseiras
+      if (!suggestions.some((x) => (x.key as any) === key)) suggestions.push(el);
+    };
+
+    if (team.length === 0) {
+      pushTip(
+        "empty",
+        <span key="empty">Monte um time (até 6) para receber sugestões mais precisas.</span>
+      );
+      return { typesSorted, weaknessesSorted, suggestions };
+    }
+
+    if (team.length < 6) {
+      pushTip(
+        "fill6",
+        <span key="fill6">
+          Considere completar o time com <strong>6 Pokémon</strong> para melhorar a cobertura.
+        </span>
+      );
+    }
+
+    // Pouca diversidade de tipos
+    if (teamTypesSet.size <= 3) {
+      pushTip(
+        "lowdiv",
+        <span key="lowdiv">
+          Seu time tem pouca diversidade de tipos. Variar os elementos ajuda a reduzir fraquezas repetidas.
+        </span>
+      );
+    }
+
+    // Repetição alta do mesmo tipo
+    const repeated = typesSorted.filter(([, c]) => c >= 3).map(([t]) => t);
+    if (repeated.length > 0) {
+      pushTip(
+        "repeated",
+        <span key="repeated" className="inline-flex items-center gap-2 flex-wrap">
+          Muitos Pokémon compartilham:
+          {repeated.map((t) => (
+            <span key={t} className="inline-flex items-center gap-1">
+              <TypeBadge type={t} size="sm" />
+            </span>
+          ))}
+          Isso pode aumentar fraquezas duplicadas.
+        </span>
+      );
+    }
+
+    // Dicas baseadas nas fraquezas mais recorrentes
+    const topWeak = weaknessesSorted.slice(0, 5); // pega até 5 fraquezas
+    for (const [weakType, count] of topWeak) {
+      const fix = WEAKNESS_FIX[weakType];
+      if (!fix) continue;
+
+      // sugere apenas tipos que ainda NÃO existem no time
+      const candidates = fix.add.filter((t) => !teamTypesSet.has(t));
+      if (candidates.length === 0) continue;
+
+      const key = `fix-${weakType}`;
+      pushTip(
+        key,
+        <span key={key} className="inline-flex items-center gap-2 flex-wrap">
+          Sua fraqueza mais recorrente inclui:
+          <span className="inline-flex items-center gap-1">
+            <TypeBadge type={weakType} size="sm" />
+            <span className="text-xs font-extrabold text-slate-600">x{count}</span>
+          </span>
+          • Considerar adicionar:
+          <span className="inline-flex items-center gap-1 flex-wrap">
+            {candidates.slice(0, 3).map((t) => (
+              <TypeBadge key={t} type={t} size="sm" />
+            ))}
+          </span>
+          <span className="text-slate-500">({fix.note})</span>
+        </span>
+      );
+    }
+
+    return {
+      typesSorted,
+      weaknessesSorted,
+      suggestions,
+    };
+  }, [team]);
+
+  const downloadTeamCard = async () => {
+    if (!teamCardRef.current || team.length === 0) return;
+
+    setIsDownloadingCard(true);
+    try {
+      const canvas = await html2canvas(teamCardRef.current, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+      });
+
+      const dataUrl = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = `pokedexpro-time.png`;
+      a.click();
+    } finally {
+      setIsDownloadingCard(false);
+    }
+  };
+
+  // NOVO: filtros
+  const [regionFilter, setRegionFilter] = useState<RegionKey | "all">("all");
+  const [typeFilters, setTypeFilters] = useState<string[]>([]);
+  const [typesOpen, setTypesOpen] = useState(false);
+  const typesRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (allPokemon.length === 0) ensureAllLoaded();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // fecha popover ao clicar fora
+  useEffect(() => {
+    if (!typesOpen) return;
+
+    const onDown = (e: MouseEvent) => {
+      if (!typesRef.current) return;
+      if (!typesRef.current.contains(e.target as Node)) setTypesOpen(false);
+    };
+
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, [typesOpen]);
 
   const teamIds = useMemo(() => new Set(team.map((p) => p.id)), [team]);
 
@@ -543,23 +931,69 @@ const TeamBuilder = ({
 
   const removeFromTeam = (id: number) => setTeam(team.filter((p) => p.id !== id));
 
+  const regionMap = useMemo(() => {
+    const m = new Map<RegionKey, (typeof REGIONS)[number]>();
+    REGIONS.forEach((r) => m.set(r.key, r));
+    return m;
+  }, []);
+
+  // NOVO: tipos disponíveis (para o filtro)
+  const allTypes = useMemo(() => {
+    const types = new Set<string>();
+    allPokemon.forEach((p) => p.type.forEach((t) => types.add(t)));
+    return Array.from(types).sort((a, b) => a.localeCompare(b));
+  }, [allPokemon]);
+
+  const toggleType = (t: string) => {
+    setTypeFilters((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  };
+
+  const clearFilters = () => {
+    setRegionFilter("all");
+    setTypeFilters([]);
+  };
+
   const filteredAll = useMemo(() => {
-    if (!searchTerm) return allPokemon;
-    const lower = searchTerm.toLowerCase();
-    return allPokemon.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lower) ||
-        p.num.includes(lower) ||
-        String(p.id).includes(lower)
-    );
-  }, [allPokemon, searchTerm]);
+    let list = allPokemon;
+
+    // filtro por geração
+    if (regionFilter !== "all") {
+      const r = regionMap.get(regionFilter);
+      if (r) list = list.filter((p) => p.id >= r.from && p.id <= r.to);
+    }
+
+    // filtro por tipos (OR: qualquer tipo selecionado)
+    if (typeFilters.length > 0) {
+      list = list.filter((p) => p.type.some((t) => typeFilters.includes(t)));
+    }
+
+    // busca
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(lower) ||
+          p.num.includes(lower) ||
+          String(p.id).includes(lower)
+      );
+    }
+
+    return list;
+  }, [allPokemon, searchTerm, regionFilter, typeFilters, regionMap]);
+
+  // regiões a exibir (se filtrou por geração, mostra só a seção daquela)
+  const regionsToShow = useMemo(() => {
+    if (regionFilter === "all") return REGIONS;
+    const r = regionMap.get(regionFilter);
+    return r ? [r] : REGIONS;
+  }, [regionFilter, regionMap]);
 
   const byRegion = useMemo(() => {
-    return REGIONS.map((r) => {
+    return regionsToShow.map((r) => {
       const list = filteredAll.filter((p) => p.id >= r.from && p.id <= r.to);
       return { region: r, list };
     });
-  }, [filteredAll]);
+  }, [filteredAll, regionsToShow]);
 
   const TeamSlot = ({ index }: { index: number }) => {
     const p = team[index];
@@ -574,7 +1008,7 @@ const TeamBuilder = ({
           ].join(" ")}
         >
           <span className="text-xs font-extrabold text-slate-400">
-            Slot {index + 1}
+            Pokémon {index + 1}
           </span>
         </div>
       );
@@ -675,7 +1109,6 @@ const TeamBuilder = ({
           </div>
         </div>
 
-        {/* Check de selecionado */}
         <div className="absolute top-2 right-2 z-20">
           {selected ? (
             <div className="w-7 h-7 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-sm">
@@ -691,68 +1124,344 @@ const TeamBuilder = ({
     );
   };
 
+  // NOVO: dock de busca + filtros (mesma estética do FilterDock)
+  const TeamFilterDock = () => (
+    <div className="sticky top-20 z-40 flex justify-center w-full px-4 mb-10">
+      <div className="w-full max-w-4xl rounded-full p-1 bg-white/75 backdrop-blur-xl border border-white/60 shadow-[0_14px_40px_rgba(15,23,42,0.12)]">
+        <div className="flex items-center gap-2 w-full">
+          {/* Busca */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+            <input
+              type="text"
+              placeholder="Buscar Pokémon (nome ou número)..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={[
+                "w-full rounded-full pl-10 pr-4 py-2 text-sm",
+                "bg-slate-50 text-slate-800 placeholder:text-slate-400",
+                "border border-transparent focus:border-sky-200 focus:bg-white",
+                "focus:outline-none focus:ring-2 focus:ring-sky-200/60 transition",
+              ].join(" ")}
+            />
+          </div>
+
+          {/* Geração (select) */}
+          <div className="hidden sm:block">
+            <select
+              value={regionFilter}
+              onChange={(e) => setRegionFilter(e.target.value as RegionKey | "all")}
+              className={[
+                "rounded-full px-4 py-2 text-sm font-extrabold",
+                "bg-slate-50 text-slate-700",
+                "border border-transparent focus:border-sky-200 focus:bg-white",
+                "focus:outline-none focus:ring-2 focus:ring-sky-200/60 transition",
+                "cursor-pointer",
+              ].join(" ")}
+              aria-label="Filtrar por geração"
+              title="Filtrar por geração"
+            >
+              <option value="all">Todas</option>
+              {REGIONS.map((r) => (
+                <option key={r.key} value={r.key}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tipos (ícones) */}
+          <div ref={typesRef} className="relative">
+            <button
+              onClick={() => setTypesOpen((v) => !v)}
+              className={[
+                "inline-flex items-center gap-2 rounded-full px-3 py-2",
+                "bg-slate-50 text-slate-700",
+                "border border-transparent hover:bg-white",
+                "focus:outline-none focus:ring-2 focus:ring-sky-200/60 transition",
+              ].join(" ")}
+              aria-label="Filtrar por tipos"
+              title="Filtrar por tipos"
+            >
+              {/* ícone “pilha” simples: usa TypeBadge pequeno se já houver seleção */}
+              {typeFilters.length === 0 ? (
+                <span className="text-xs font-extrabold px-2">Tipos</span>
+              ) : (
+                <div className="flex items-center gap-1">
+                  {typeFilters.slice(0, 2).map((t) => (
+                    <div
+                      key={t}
+                      className="w-7 h-7 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center"
+                      title={t}
+                    >
+                      <TypeBadge type={t} size="sm" />
+                    </div>
+                  ))}
+                  {typeFilters.length > 2 && (
+                    <span className="text-xs font-black text-slate-500 ml-1">
+                      +{typeFilters.length - 2}
+                    </span>
+                  )}
+                </div>
+              )}
+            </button>
+
+            {typesOpen && (
+              <div
+                className={[
+                  "absolute right-0 mt-2 w-[320px] sm:w-[360px]",
+                  "rounded-3xl border border-white/60 bg-white/80 backdrop-blur-xl",
+                  "shadow-[0_18px_55px_rgba(15,23,42,0.16)]",
+                  "p-4",
+                ].join(" ")}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-sm font-extrabold text-slate-800">
+                    Filtrar por tipos
+                  </div>
+                  <button
+                    onClick={() => setTypeFilters([])}
+                    disabled={typeFilters.length === 0}
+                    className={[
+                      "text-xs font-extrabold px-3 py-1.5 rounded-full",
+                      "bg-white/80 border border-white/60 shadow-sm",
+                      "text-slate-700 hover:bg-white transition",
+                      "disabled:opacity-50 disabled:cursor-not-allowed",
+                      "focus:outline-none focus:ring-2 focus:ring-sky-200/60",
+                    ].join(" ")}
+                  >
+                    Limpar
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-9 gap-2">
+                  {allTypes.map((t) => {
+                    const selected = typeFilters.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        onClick={() => toggleType(t)}
+                        className={[
+                          "w-9 h-9 rounded-full flex items-center justify-center",
+                          "bg-white/75 border border-white/60 shadow-sm",
+                          "hover:bg-white transition",
+                          selected ? "ring-2 ring-sky-200/80" : "",
+                          "focus:outline-none focus:ring-2 focus:ring-sky-200/60",
+                        ].join(" ")}
+                        title={t}
+                        aria-label={`Tipo ${t}`}
+                      >
+                        <TypeBadge type={t} size="sm" />
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-3 text-xs font-semibold text-slate-500">
+                  {typeFilters.length === 0
+                    ? "Nenhum tipo selecionado."
+                    : `${typeFilters.length} tipo(s) selecionado(s).`}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Limpar filtros (compacto) */}
+          <button
+            onClick={clearFilters}
+            disabled={regionFilter === "all" && typeFilters.length === 0 && !searchTerm}
+            className={[
+              "hidden sm:inline-flex items-center justify-center",
+              "w-10 h-10 rounded-full",
+              "bg-white/80 border border-white/60 shadow-sm",
+              "text-slate-600 hover:text-rose-600 hover:bg-white transition",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "focus:outline-none focus:ring-2 focus:ring-sky-200/60",
+            ].join(" ")}
+            title="Limpar busca e filtros"
+            aria-label="Limpar busca e filtros"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <main className="container mx-auto px-4 py-14 pb-24">
       <div className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/75 border border-white/60 shadow-sm">
           <Users className="w-4 h-4 text-slate-500" />
           <span className="text-sm font-extrabold text-slate-700">
-            Monte seu time (até 6)
+            Forme seu time
           </span>
         </div>
 
         <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 mt-6 mb-3">
-          Crie seu <span className="text-sky-600">time</span>.
+          Eu <span className="text-sky-600">escolho</span> você!
         </h1>
         <p className="text-slate-600 max-w-2xl mx-auto">
-          Escolha até 6 Pokémon de qualquer geração. A lista abaixo está
-          separada por geração para facilitar.
+          Escolha até 6 Pokémon de qualquer geração.
         </p>
       </div>
 
-      <div className="max-w-5xl mx-auto mt-10">
-        <div className="rounded-[2rem] border border-white/60 bg-white/75 backdrop-blur-xl shadow-[0_18px_55px_rgba(15,23,42,0.10)] p-6">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="text-left">
-              <div className="text-sm font-extrabold text-slate-800">
-                Seu time
-              </div>
-              <div className="text-xs font-semibold text-slate-500 mt-1">
-                {team.length}/6 selecionados
-              </div>
-            </div>
-
-            <button
-              onClick={() => setTeam([])}
-              disabled={team.length === 0}
-              className={[
-                "inline-flex items-center gap-2 px-4 py-2 rounded-full",
-                "bg-white/80 border border-white/60 shadow-sm",
-                "text-sm font-extrabold text-slate-700",
-                "hover:bg-white transition",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
-              ].join(" ")}
-            >
-              <Trash2 size={16} />
-              Limpar time
-            </button>
+            {/* Toolbar fora do card do time */}
+      <div className="max-w-5xl mx-auto mt-10 flex items-center justify-between gap-3 flex-wrap">
+        <div className="text-left">
+          <div className="text-sm font-extrabold text-slate-800">Seu time</div>
+          <div className="text-xs font-semibold text-slate-500 mt-1">
+            {team.length}/6 selecionados
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowStats((v) => !v)}
+            className={[
+              "inline-flex items-center gap-2 px-4 py-2 rounded-full",
+              "bg-white/80 border border-white/60 shadow-sm",
+              "text-sm font-extrabold text-slate-700",
+              "hover:bg-white transition",
+              "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+            ].join(" ")}
+          >
+            <Info size={16} />
+            Estatísticas
+          </button>
+
+          <button
+            onClick={downloadTeamCard}
+            disabled={team.length === 0 || isDownloadingCard}
+            className={[
+              "inline-flex items-center gap-2 px-4 py-2 rounded-full",
+              "bg-white/80 border border-white/60 shadow-sm",
+              "text-sm font-extrabold text-slate-700",
+              "hover:bg-white transition",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+            ].join(" ")}
+          >
+            <Download size={16} />
+            {isDownloadingCard ? "Gerando..." : "Baixar card"}
+          </button>
+
+          <button
+            onClick={() => setTeam([])}
+            disabled={team.length === 0}
+            className={[
+              "inline-flex items-center gap-2 px-4 py-2 rounded-full",
+              "bg-white/80 border border-white/60 shadow-sm",
+              "text-sm font-extrabold text-slate-700",
+              "hover:bg-white transition",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+            ].join(" ")}
+          >
+            <Trash2 size={16} />
+            Limpar time
+          </button>
+        </div>
+      </div>
+
+      {/* Card do time (capturado pelo html2canvas) */}
+      <div className="max-w-5xl mx-auto mt-4">
+        <div
+          ref={teamCardRef}
+          className="rounded-[2rem] border border-white/60 bg-white/75 backdrop-blur-xl shadow-[0_18px_55px_rgba(15,23,42,0.10)] p-6"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <TeamSlot key={i} index={i} />
             ))}
           </div>
         </div>
+
+        {/* Estatísticas (só aparece ao clicar) */}
+        {showStats && (
+          <div className="mt-4 rounded-3xl border border-white/60 bg-white/75 backdrop-blur-xl shadow-sm p-6">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="text-left">
+                <div className="text-sm font-extrabold text-slate-900">
+                  Feedback do time
+                </div>
+                <div className="text-xs font-semibold text-slate-500 mt-1">
+                  Dicas rápidas baseadas nos tipos e fraquezas do seu time.
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowStats(false)}
+                className={[
+                  "inline-flex items-center gap-2 px-4 py-2 rounded-full",
+                  "bg-white/80 border border-white/60 shadow-sm",
+                  "text-sm font-extrabold text-slate-700",
+                  "hover:bg-white transition",
+                  "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+                ].join(" ")}
+              >
+                <X size={16} />
+                Fechar
+              </button>
+            </div>
+
+            <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
+                <div className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
+                  Tipos no time
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {teamStats.typesSorted.length === 0 ? (
+                    <div className="text-sm font-semibold text-slate-500">
+                      Nenhum Pokémon selecionado.
+                    </div>
+                  ) : (
+                    teamStats.typesSorted.map(([t, c]) => (
+                      <div
+                        key={t}
+                        className="inline-flex items-center gap-2 bg-white rounded-full border border-slate-100 px-3 py-1.5 shadow-sm"
+                        title={`${t}: ${c}`}
+                      >
+                        <TypeBadge type={t} size="sm" />
+                        <span className="text-xs font-extrabold text-slate-700">
+                          x{c}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
+                <div className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
+                  Dicas
+                </div>
+                <ul className="mt-3 space-y-2 text-sm font-semibold text-slate-700 list-disc pl-5">
+                  {teamStats.suggestions.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+
+                {teamStats.weaknessesSorted.length > 0 && (
+                  <div className="mt-4 text-xs font-semibold text-slate-500">
+                    Fraquezas mais frequentes:{" "}
+                    <span className="font-extrabold text-slate-700">
+                      {teamStats.weaknessesSorted
+                        .slice(0, 5)
+                        .map(([w, c]) => `${w} (${c})`)
+                        .join(", ")}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="mt-10">
-        <FilterDock
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          placeholder="Buscar Pokémon (nome ou número)..."
-        />
+        {/* SUBSTITUI o FilterDock aqui */}
+        <TeamFilterDock />
 
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-2 bg-white/75 px-4 py-2 rounded-full text-xs font-extrabold text-slate-600 border border-white/60 shadow-sm">
@@ -794,7 +1503,7 @@ const TeamBuilder = ({
                       Nenhum Pokémon encontrado nesta geração
                     </div>
                     <div className="text-xs font-semibold text-slate-400 mt-2">
-                      Ajuste sua busca.
+                      Ajuste sua busca ou filtros.
                     </div>
                   </div>
                 ) : (
@@ -812,6 +1521,7 @@ const TeamBuilder = ({
     </main>
   );
 };
+
 
 // ------------------------
 // Tipos
@@ -1194,7 +1904,7 @@ const App = () => {
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [isLoadingAll, setIsLoadingAll] = useState(false);
 
-  // Team (novo)
+  // Team
   const [team, setTeam] = useState<Pokemon[]>([]);
 
   // Modal
@@ -1208,7 +1918,9 @@ const App = () => {
     return r ? r.label : "Região";
   }, [region]);
 
+  // ------------------------
   // Load: região (home)
+  // ------------------------
   const loadRegion = async (rKey: RegionKey) => {
     const r = REGIONS.find((x) => x.key === rKey)!;
 
@@ -1226,7 +1938,9 @@ const App = () => {
     }
   };
 
+  // ------------------------
   // Load: todas as regiões (para Tipos, Time e evolução universal)
+  // ------------------------
   const loadAllRegions = async () => {
     if (isLoadingAll) return;
     setIsLoadingAll(true);
@@ -1262,7 +1976,9 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
 
+  // ------------------------
   // Filtro (home)
+  // ------------------------
   useEffect(() => {
     let result = regionPokemon;
     if (searchTerm) {
@@ -1274,7 +1990,10 @@ const App = () => {
     setFilteredRegionPokemon(result);
   }, [searchTerm, regionPokemon]);
 
+  // ------------------------
   // Evolução via PokeAPI (para qualquer geração)
+  // API citada: https://pokeapi.co (pokemon-species + evolution_chain)
+  // ------------------------
   const fetchEvolutionForPokemon = async (p: Pokemon) => {
     const hasLocalEvo = Boolean(
       (p as any).prev_evolution?.length || (p as any).next_evolution?.length
@@ -1284,7 +2003,6 @@ const App = () => {
     if (evoCache[p.id]) return;
 
     try {
-      // AQUI está a API citada: PokeAPI (species) + evolution_chain
       const speciesRes = await fetch(
         `https://pokeapi.co/api/v2/pokemon-species/${p.id}`
       );
@@ -1392,7 +2110,9 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPokemon?.id]);
 
+  // ------------------------
   // Lookups
+  // ------------------------
   const lookupByNum = (num: string): Pokemon | null => {
     const fromAll = allPokemon.find((p) => p.num === num);
     if (fromAll) return fromAll;
@@ -1423,15 +2143,27 @@ const App = () => {
     return cached;
   };
 
+  // Header strip: só mostra quando estiver na Home (muda conforme região)
+  const headerRegionStrip = view === "home" ? region : undefined;
+
   return (
     <div className="min-h-screen font-sans text-slate-800 flex flex-col bg-gradient-to-br from-sky-50 via-white to-fuchsia-50">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-cyan-200/30 blur-3xl" />
-        <div className="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-fuchsia-200/25 blur-3xl" />
-        <div className="absolute -bottom-24 left-1/3 w-96 h-96 rounded-full bg-amber-200/25 blur-3xl" />
-      </div>
+      {/* Easter egg: fundo sutil muda com a região quando em Home; no resto mantém neutro */}
+      {view === "home" ? (
+        <RegionEasterEgg regionKey={region} />
+      ) : (
+        <div className="pointer-events-none fixed inset-0 overflow-hidden">
+          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-cyan-200/30 blur-3xl" />
+          <div className="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-fuchsia-200/25 blur-3xl" />
+          <div className="absolute -bottom-24 left-1/3 w-96 h-96 rounded-full bg-amber-200/25 blur-3xl" />
+        </div>
+      )}
 
-      <Header setView={setView} currentView={view} />
+      <Header
+        setView={setView}
+        currentView={view}
+        regionKeyForEasterEgg={headerRegionStrip}
+      />
 
       {view === "region" && (
         <RegionSelect
