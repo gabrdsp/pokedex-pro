@@ -7,25 +7,11 @@ import {
   ArrowLeft,
   Weight,
   Ruler,
-  Leaf,
-  Flame,
-  Droplets,
-  Bug,
-  Zap,
-  Skull,
-  Wind,
-  Mountain,
-  Hexagon,
-  Snowflake,
-  Eye,
-  Swords,
-  Shield,
-  Star,
-  Ghost,
   CircleDot,
-  Crown,
-  Moon,
   Info,
+  Check,
+  Trash2,
+  Users,
 } from "lucide-react";
 
 import { REGIONS, type RegionKey } from "./data/regions";
@@ -81,31 +67,10 @@ const toSerebiiImg = (id: number) =>
   `https://www.serebii.net/pokemon/art/${pad3(id)}.png`;
 
 // ------------------------
-// Tipos: ícones, cores e descrição
+// Tipos: descrição
 // ------------------------
 
-const TYPE_ICONS: Record<string, any> = {
-  Grass: Leaf,
-  Poison: Skull,
-  Fire: Flame,
-  Flying: Wind,
-  Water: Droplets,
-  Bug: Bug,
-  Normal: CircleDot,
-  Electric: Zap,
-  Ground: Mountain,
-  Rock: Hexagon,
-  Psychic: Eye,
-  Fighting: Swords,
-  Ice: Snowflake,
-  Ghost: Ghost,
-  Dragon: Crown,
-  Steel: Shield,
-  Fairy: Star,
-  Dark: Moon,
-};
-
-// NOVO: mapa de imagens para os 18 tipos 
+// NOVO: mapa de imagens para os 18 tipos
 const TYPE_IMAGES: Record<string, string> = {
   Grass: GO_Grass,
   Poison: GO_Poison,
@@ -125,27 +90,6 @@ const TYPE_IMAGES: Record<string, string> = {
   Steel: GO_Steel,
   Fairy: GO_Fairy,
   Dark: GO_Dark,
-};
-
-const TYPE_COLORS: Record<string, string> = {
-  Grass: "",
-  Poison: "bg-purple-50 text-purple-700 border-purple-200",
-  Fire: "bg-red-50 text-red-700 border-red-200",
-  Flying: "bg-sky-50 text-sky-700 border-sky-200",
-  Water: "bg-blue-50 text-blue-700 border-blue-200",
-  Bug: "bg-lime-50 text-lime-700 border-lime-200",
-  Normal: "bg-slate-50 text-slate-700 border-slate-200",
-  Electric: "bg-yellow-50 text-yellow-800 border-yellow-200",
-  Ground: "bg-amber-50 text-amber-800 border-amber-200",
-  Rock: "bg-stone-50 text-stone-700 border-stone-200",
-  Psychic: "bg-pink-50 text-pink-700 border-pink-200",
-  Fighting: "bg-orange-50 text-orange-800 border-orange-200",
-  Ice: "bg-cyan-50 text-cyan-800 border-cyan-200",
-  Ghost: "bg-indigo-50 text-indigo-700 border-indigo-200",
-  Dragon: "bg-violet-50 text-violet-700 border-violet-200",
-  Steel: "bg-slate-100 text-slate-700 border-slate-200",
-  Fairy: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
-  Dark: "bg-zinc-50 text-zinc-700 border-zinc-200",
 };
 
 const TYPE_TRANSLATIONS: Record<string, string> = {
@@ -208,13 +152,6 @@ const TYPE_DESCRIPTIONS: Record<string, string> = {
     "Os Pokémons do tipo Fada habitam principalmente locais na natureza, como florestas densas, campos floridos, rios e montanhas",
 };
 
-const getTypeStyles = (type: string): string =>
-  TYPE_COLORS[type as keyof typeof TYPE_COLORS] ||
-  "bg-slate-50 text-slate-700 border-slate-200";
-
-const getTypeIcon = (type: string) =>
-  TYPE_ICONS[type as keyof typeof TYPE_ICONS] || CircleDot;
-
 // ------------------------
 // Regiões
 // ------------------------
@@ -248,20 +185,19 @@ const TypeBadge = ({
   onClick,
 }: {
   type: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   onClick?: () => void;
 }) => {
-  const styles = getTypeStyles(type);
   const imgSrc = TYPE_IMAGES[type];
 
   const sizeClasses =
     size === "lg"
       ? "w-16 h-16 p-4"
       : size === "xl"
-        ? "w-24 h-24 p-6"
-        : size === "sm"
-          ? "w-7 h-7 p-1"
-          : "w-10 h-10 p-2";
+      ? "w-24 h-24 p-6"
+      : size === "sm"
+      ? "w-7 h-7 p-1"
+      : "w-10 h-10 p-2";
 
   return (
     <div
@@ -314,8 +250,10 @@ const PokemonCard = ({
         alt={pokemon.name}
         className="w-full h-full object-contain drop-shadow-md"
         onError={(e) => {
-          (e.target as HTMLImageElement).src =
-            "https://via.placeholder.com/150?text=?";
+          const idNum = Number(pokemon.num);
+          (e.target as HTMLImageElement).src = Number.isFinite(idNum)
+            ? toSerebiiImg(idNum)
+            : "https://via.placeholder.com/150?text=?";
         }}
       />
     </div>
@@ -337,8 +275,8 @@ const Header = ({
   setView,
   currentView,
 }: {
-  setView: (v: "region" | "home" | "types" | "about") => void;
-  currentView: "region" | "home" | "types" | "about";
+  setView: (v: "region" | "home" | "types" | "about" | "team") => void;
+  currentView: "region" | "home" | "types" | "about" | "team";
 }) => (
   <header className="sticky top-0 z-50 border-b border-white/60 bg-white/70 backdrop-blur-xl">
     <div className="container mx-auto px-6 h-16 flex items-center justify-center">
@@ -418,17 +356,27 @@ const FilterDock = ({
 // ------------------------
 const RegionSelect = ({
   onSelect,
+  onCreateTeam,
 }: {
   onSelect: (region: RegionKey) => void;
+  onCreateTeam: () => void;
 }) => (
   <main className="container mx-auto px-4 py-16 pb-24">
     <div className="text-center py-8">
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/75 border border-white/60 shadow-sm">
+      <button
+        onClick={onCreateTeam}
+        className={[
+          "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/75 border border-white/60 shadow-sm",
+          "hover:bg-white/90 hover:border-white/80 transition",
+          "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+        ].join(" ")}
+        aria-label="Crie seu time"
+      >
         <img src={iconPng} alt="PokédexPro" className="w-5 h-5" />
         <span className="text-sm font-extrabold text-slate-700">
-          PokédexPro
+          Crie seu time
         </span>
-      </div>
+      </button>
 
       <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 mt-6 mb-4">
         Escolha uma <span className="text-sky-600">região</span>.
@@ -472,7 +420,7 @@ const RegionSelect = ({
 );
 
 // ------------------------
-// Home 
+// Home
 // ------------------------
 const Home = ({
   searchTerm,
@@ -556,7 +504,317 @@ const Home = ({
 );
 
 // ------------------------
-// Tipos 
+// Team Builder (novo)
+// - escolha até 6 Pokémon, de TODAS as gerações
+// - listagem agrupada por geração (REGIONS)
+// - Cards: apenas imagem (mais prático)
+// ------------------------
+const TeamBuilder = ({
+  allPokemon,
+  isLoadingAll,
+  ensureAllLoaded,
+  team,
+  setTeam,
+}: {
+  allPokemon: Pokemon[];
+  isLoadingAll: boolean;
+  ensureAllLoaded: () => void;
+  team: Pokemon[];
+  setTeam: (t: Pokemon[]) => void;
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    if (allPokemon.length === 0) ensureAllLoaded();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const teamIds = useMemo(() => new Set(team.map((p) => p.id)), [team]);
+
+  const togglePokemon = (p: Pokemon) => {
+    const exists = teamIds.has(p.id);
+    if (exists) {
+      setTeam(team.filter((x) => x.id !== p.id));
+      return;
+    }
+    if (team.length >= 6) return;
+    setTeam([...team, p]);
+  };
+
+  const removeFromTeam = (id: number) => setTeam(team.filter((p) => p.id !== id));
+
+  const filteredAll = useMemo(() => {
+    if (!searchTerm) return allPokemon;
+    const lower = searchTerm.toLowerCase();
+    return allPokemon.filter(
+      (p) =>
+        p.name.toLowerCase().includes(lower) ||
+        p.num.includes(lower) ||
+        String(p.id).includes(lower)
+    );
+  }, [allPokemon, searchTerm]);
+
+  const byRegion = useMemo(() => {
+    return REGIONS.map((r) => {
+      const list = filteredAll.filter((p) => p.id >= r.from && p.id <= r.to);
+      return { region: r, list };
+    });
+  }, [filteredAll]);
+
+  const TeamSlot = ({ index }: { index: number }) => {
+    const p = team[index];
+    if (!p) {
+      return (
+        <div
+          className={[
+            "rounded-3xl border border-dashed border-slate-200",
+            "bg-white/55 backdrop-blur-xl",
+            "h-20 flex items-center justify-center",
+            "shadow-[0_10px_30px_rgba(15,23,42,0.06)]",
+          ].join(" ")}
+        >
+          <span className="text-xs font-extrabold text-slate-400">
+            Slot {index + 1}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={[
+          "relative rounded-3xl border border-white/60 bg-white/75 backdrop-blur-xl",
+          "shadow-[0_12px_30px_rgba(15,23,42,0.08)]",
+          "h-20 flex items-center gap-3 px-4",
+        ].join(" ")}
+      >
+        <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+          <img
+            src={p.img}
+            alt={p.name}
+            className="w-10 h-10 object-contain"
+            onError={(e) => {
+              const idNum = Number(p.num);
+              (e.target as HTMLImageElement).src = Number.isFinite(idNum)
+                ? toSerebiiImg(idNum)
+                : "https://via.placeholder.com/64?text=?";
+            }}
+          />
+        </div>
+
+        <div className="min-w-0 flex-1 text-left">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-extrabold text-slate-800 truncate">
+              {p.name}
+            </span>
+            <span className="text-xs font-black text-slate-400 font-mono">
+              #{p.num}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 mt-1">
+            {p.type.slice(0, 2).map((t) => (
+              <TypeBadge key={t} type={t} size="sm" />
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={() => removeFromTeam(p.id)}
+          className={[
+            "absolute -top-2 -right-2",
+            "w-8 h-8 rounded-full bg-white/90 border border-white/70 shadow-sm",
+            "text-slate-600 hover:text-rose-600 hover:bg-white transition",
+            "flex items-center justify-center",
+            "focus:outline-none focus:ring-4 focus:ring-rose-200/60",
+          ].join(" ")}
+          aria-label={`Remover ${p.name} do time`}
+        >
+          <X size={16} />
+        </button>
+      </div>
+    );
+  };
+
+  // Card minimalista: apenas imagem + estado selecionado
+  const PokemonPickTile = ({ p }: { p: Pokemon }) => {
+    const selected = teamIds.has(p.id);
+    const disabled = !selected && team.length >= 6;
+
+    return (
+      <button
+        onClick={() => !disabled && togglePokemon(p)}
+        className={[
+          "group relative overflow-hidden",
+          "rounded-2xl border border-white/60 bg-white/75 backdrop-blur-xl",
+          "shadow-[0_10px_28px_rgba(15,23,42,0.07)]",
+          "hover:shadow-[0_14px_36px_rgba(15,23,42,0.11)]",
+          "transition-all duration-200",
+          disabled ? "opacity-50 cursor-not-allowed" : "hover:-translate-y-0.5",
+          selected ? "ring-4 ring-sky-200/70" : "",
+          "p-3",
+          "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+        ].join(" ")}
+        aria-label={selected ? `Remover ${p.name}` : `Adicionar ${p.name}`}
+        title={selected ? "Selecionado" : "Selecionar"}
+      >
+        <div className="pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full bg-gradient-to-br from-cyan-200/35 via-fuchsia-200/25 to-amber-200/25 blur-2xl opacity-70" />
+
+        <div className="relative z-10 flex items-center justify-center">
+          <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+            <img
+              src={p.img}
+              alt={p.name}
+              className="w-14 h-14 md:w-16 md:h-16 object-contain drop-shadow-sm"
+              onError={(e) => {
+                const idNum = Number(p.num);
+                (e.target as HTMLImageElement).src = Number.isFinite(idNum)
+                  ? toSerebiiImg(idNum)
+                  : "https://via.placeholder.com/64?text=?";
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Check de selecionado */}
+        <div className="absolute top-2 right-2 z-20">
+          {selected ? (
+            <div className="w-7 h-7 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-sm">
+              <Check size={14} />
+            </div>
+          ) : (
+            <div className="w-7 h-7 rounded-full bg-white/80 border border-white/70 text-slate-500 flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition">
+              <ArrowRight size={14} />
+            </div>
+          )}
+        </div>
+      </button>
+    );
+  };
+
+  return (
+    <main className="container mx-auto px-4 py-14 pb-24">
+      <div className="text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/75 border border-white/60 shadow-sm">
+          <Users className="w-4 h-4 text-slate-500" />
+          <span className="text-sm font-extrabold text-slate-700">
+            Monte seu time (até 6)
+          </span>
+        </div>
+
+        <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 mt-6 mb-3">
+          Crie seu <span className="text-sky-600">time</span>.
+        </h1>
+        <p className="text-slate-600 max-w-2xl mx-auto">
+          Escolha até 6 Pokémon de qualquer geração. A lista abaixo está
+          separada por geração para facilitar.
+        </p>
+      </div>
+
+      <div className="max-w-5xl mx-auto mt-10">
+        <div className="rounded-[2rem] border border-white/60 bg-white/75 backdrop-blur-xl shadow-[0_18px_55px_rgba(15,23,42,0.10)] p-6">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="text-left">
+              <div className="text-sm font-extrabold text-slate-800">
+                Seu time
+              </div>
+              <div className="text-xs font-semibold text-slate-500 mt-1">
+                {team.length}/6 selecionados
+              </div>
+            </div>
+
+            <button
+              onClick={() => setTeam([])}
+              disabled={team.length === 0}
+              className={[
+                "inline-flex items-center gap-2 px-4 py-2 rounded-full",
+                "bg-white/80 border border-white/60 shadow-sm",
+                "text-sm font-extrabold text-slate-700",
+                "hover:bg-white transition",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
+                "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+              ].join(" ")}
+            >
+              <Trash2 size={16} />
+              Limpar time
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <TeamSlot key={i} index={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <FilterDock
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          placeholder="Buscar Pokémon (nome ou número)..."
+        />
+
+        <div className="text-center mb-8">
+          <span className="inline-flex items-center gap-2 bg-white/75 px-4 py-2 rounded-full text-xs font-extrabold text-slate-600 border border-white/60 shadow-sm">
+            {isLoadingAll
+              ? "Carregando lista completa…"
+              : `${filteredAll.length} Pokémon disponíveis`}
+          </span>
+        </div>
+
+        {isLoadingAll ? (
+          <div className="flex flex-col items-center justify-center py-24 text-slate-500">
+            <div className="w-16 h-16 bg-white/80 border border-white/60 rounded-full flex items-center justify-center mb-4 shadow-sm">
+              <Search size={22} />
+            </div>
+            <p className="font-bold">Preparando todas as gerações…</p>
+            <p className="text-xs mt-2 text-slate-400">
+              Isso pode levar alguns segundos no primeiro carregamento.
+            </p>
+          </div>
+        ) : (
+          <div className="max-w-6xl mx-auto space-y-10">
+            {byRegion.map(({ region, list }) => (
+              <section key={region.key}>
+                <div className="flex items-end justify-between gap-4 flex-wrap mb-4">
+                  <div className="text-left">
+                    <h2 className="text-2xl font-extrabold text-slate-900">
+                      {region.label}
+                    </h2>
+                    <div className="text-sm font-semibold text-slate-500 mt-1">
+                      #{String(region.from).padStart(3, "0")} – #
+                      {String(region.to).padStart(3, "0")} • {list.length} Pokémon
+                    </div>
+                  </div>
+                </div>
+
+                {list.length === 0 ? (
+                  <div className="rounded-3xl border border-white/60 bg-white/70 backdrop-blur-xl p-10 text-center text-slate-500 shadow-sm">
+                    <div className="font-extrabold">
+                      Nenhum Pokémon encontrado nesta geração
+                    </div>
+                    <div className="text-xs font-semibold text-slate-400 mt-2">
+                      Ajuste sua busca.
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3">
+                    {list.map((p) => (
+                      <PokemonPickTile key={p.id} p={p} />
+                    ))}
+                  </div>
+                )}
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+};
+
+// ------------------------
+// Tipos
 // ------------------------
 const TypesPage = ({
   allPokemon,
@@ -720,8 +978,6 @@ const Footer = () => (
 
 // ------------------------
 // Evolução: cache
-// - next: imediatos (ramificações)
-// - nextChain: cadeia linear completa (ex.: Chikorita -> Bayleef -> Meganium)
 // ------------------------
 type EvoCacheEntry = { prev: EvoRef[]; next: EvoRef[]; nextChain: EvoRef[] };
 type EvoCache = Record<number, EvoCacheEntry>;
@@ -737,7 +993,11 @@ const PokemonModal = ({
   onClose: () => void;
   onSelect: (p: Pokemon) => void;
   lookupByNum: (num: string) => Pokemon | null;
-  evolutionFor: (p: Pokemon) => { prev: EvoRef[]; next: EvoRef[]; nextChain: EvoRef[] } | null;
+  evolutionFor: (p: Pokemon) => {
+    prev: EvoRef[];
+    next: EvoRef[];
+    nextChain: EvoRef[];
+  } | null;
 }) => {
   if (!pokemon) return null;
 
@@ -746,7 +1006,8 @@ const PokemonModal = ({
   const renderEvoNode = (ref: EvoRef) => {
     const pData = lookupByNum(ref.num);
     const idNum = Number(ref.num);
-    const img = pData?.img || (Number.isFinite(idNum) ? toSerebiiImg(idNum) : "");
+    const img =
+      pData?.img || (Number.isFinite(idNum) ? toSerebiiImg(idNum) : "");
     return (
       <button
         key={ref.num}
@@ -755,18 +1016,31 @@ const PokemonModal = ({
         title={ref.name}
       >
         <div className="w-16 h-16 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-2 overflow-hidden">
-          {img ? <img src={img} className="w-10 h-10" alt={ref.name} /> : <span className="text-xs text-slate-400">?</span>}
+          {img ? (
+            <img src={img} className="w-10 h-10" alt={ref.name} />
+          ) : (
+            <span className="text-xs text-slate-400">?</span>
+          )}
         </div>
-        <span className="text-xs font-extrabold text-slate-600">{ref.name}</span>
+        <span className="text-xs font-extrabold text-slate-600">
+          {ref.name}
+        </span>
       </button>
     );
   };
 
-  const nextToShow = evo ? (evo.nextChain.length > 0 ? evo.nextChain : evo.next) : [];
+  const nextToShow = evo
+    ? evo.nextChain.length > 0
+      ? evo.nextChain
+      : evo.next
+    : [];
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div className="relative w-full max-w-5xl h-[85vh] md:h-auto md:max-h-[90vh] overflow-hidden rounded-[2rem] shadow-2xl flex flex-col md:flex-row bg-white">
         <button
           onClick={onClose}
@@ -777,7 +1051,9 @@ const PokemonModal = ({
         </button>
 
         <div className="w-full md:w-5/12 bg-gradient-to-br from-sky-50 via-white to-fuchsia-50 relative flex flex-col items-center justify-center p-10 border-r border-slate-100">
-          <div className="absolute top-10 left-10 text-8xl font-black text-slate-200/60 select-none">{pokemon.num}</div>
+          <div className="absolute top-10 left-10 text-8xl font-black text-slate-200/60 select-none">
+            {pokemon.num}
+          </div>
 
           <img
             src={pokemon.img}
@@ -785,7 +1061,9 @@ const PokemonModal = ({
             className="relative z-10 w-56 h-56 object-contain drop-shadow-xl"
             onError={(e) => {
               const idNum = Number(pokemon.num);
-              (e.target as HTMLImageElement).src = Number.isFinite(idNum) ? toSerebiiImg(idNum) : "https://via.placeholder.com/256?text=?";
+              (e.target as HTMLImageElement).src = Number.isFinite(idNum)
+                ? toSerebiiImg(idNum)
+                : "https://via.placeholder.com/256?text=?";
             }}
           />
 
@@ -793,7 +1071,9 @@ const PokemonModal = ({
             {pokemon.type.map((t: string) => (
               <div key={t} className="flex flex-col items-center gap-2">
                 <TypeBadge type={t} size="lg" />
-                <span className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">{t}</span>
+                <span className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
+                  {t}
+                </span>
               </div>
             ))}
           </div>
@@ -801,7 +1081,9 @@ const PokemonModal = ({
 
         <div className="w-full md:w-7/12 p-10 overflow-y-auto">
           <div className="mb-8">
-            <h2 className="text-4xl font-extrabold text-slate-900 mb-2">{pokemon.name}</h2>
+            <h2 className="text-4xl font-extrabold text-slate-900 mb-2">
+              {pokemon.name}
+            </h2>
             <p className="text-slate-500 font-medium">Espécie de Pokémon</p>
           </div>
 
@@ -810,21 +1092,30 @@ const PokemonModal = ({
               <div className="flex items-center gap-2 text-slate-500 text-xs font-extrabold uppercase tracking-wider mb-1">
                 <Ruler size={14} /> Altura
               </div>
-              <p className="text-xl font-bold text-slate-800">{pokemon.height}</p>
+              <p className="text-xl font-bold text-slate-800">
+                {pokemon.height}
+              </p>
             </div>
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2 text-slate-500 text-xs font-extrabold uppercase tracking-wider mb-1">
                 <Weight size={14} /> Peso
               </div>
-              <p className="text-xl font-bold text-slate-800">{pokemon.weight}</p>
+              <p className="text-xl font-bold text-slate-800">
+                {pokemon.weight}
+              </p>
             </div>
           </div>
 
           <div className="mb-8">
-            <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest mb-4">Fraquezas</h3>
+            <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest mb-4">
+              Fraquezas
+            </h3>
             <div className="flex flex-wrap gap-3">
               {pokemon.weaknesses.map((w: string) => (
-                <div key={w} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm">
+                <div
+                  key={w}
+                  className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm"
+                >
                   <TypeBadge type={w} size="sm" />
                   <span className="text-sm font-bold text-slate-700">{w}</span>
                 </div>
@@ -834,10 +1125,11 @@ const PokemonModal = ({
 
           {evo && (evo.prev.length > 0 || nextToShow.length > 0) && (
             <div>
-              <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest mb-4">Cadeia de Evolução</h3>
+              <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest mb-4">
+                Cadeia de Evolução
+              </h3>
 
               <div className="flex items-center gap-4 overflow-x-auto pb-2">
-                {/* Prev (ancestrais em cadeia) */}
                 {evo.prev.map((prev) => (
                   <div key={prev.num} className="flex items-center gap-4">
                     {renderEvoNode(prev)}
@@ -845,7 +1137,6 @@ const PokemonModal = ({
                   </div>
                 ))}
 
-                {/* Current */}
                 <div className="flex flex-col items-center scale-110">
                   <div className="w-14 h-14 rounded-full bg-sky-50 border-2 border-sky-100 flex items-center justify-center mb-2 shadow-sm overflow-hidden">
                     <img
@@ -854,14 +1145,19 @@ const PokemonModal = ({
                       alt={pokemon.name}
                       onError={(e) => {
                         const idNum = Number(pokemon.num);
-                        (e.target as HTMLImageElement).src = Number.isFinite(idNum) ? toSerebiiImg(idNum) : "https://via.placeholder.com/64?text=?";
+                        (e.target as HTMLImageElement).src = Number.isFinite(
+                          idNum
+                        )
+                          ? toSerebiiImg(idNum)
+                          : "https://via.placeholder.com/64?text=?";
                       }}
                     />
                   </div>
-                  <span className="text-xs font-extrabold text-sky-700">{pokemon.name}</span>
+                  <span className="text-xs font-extrabold text-sky-700">
+                    {pokemon.name}
+                  </span>
                 </div>
 
-                {/* Next (cadeia completa se linear; senão, ramificações imediatas) */}
                 {nextToShow.map((next) => (
                   <div key={next.num} className="flex items-center gap-4">
                     <ArrowRight size={16} className="text-slate-300" />
@@ -881,18 +1177,25 @@ const PokemonModal = ({
 // App
 // ------------------------
 const App = () => {
-  const [view, setView] = useState<"region" | "home" | "types" | "about">("region");
+  const [view, setView] = useState<
+    "region" | "home" | "types" | "about" | "team"
+  >("region");
 
   // Região selecionada (home)
   const [region, setRegion] = useState<RegionKey>("kanto");
   const [regionPokemon, setRegionPokemon] = useState<Pokemon[]>([]);
-  const [filteredRegionPokemon, setFilteredRegionPokemon] = useState<Pokemon[]>([]);
+  const [filteredRegionPokemon, setFilteredRegionPokemon] = useState<Pokemon[]>(
+    []
+  );
   const [isLoadingRegion, setIsLoadingRegion] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Pokédex completa (todas as regiões) — usada por Tipos e também para evolução/lookup
+  // Pokédex completa (todas as regiões) — usada por Tipos e Time e também para evolução/lookup
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [isLoadingAll, setIsLoadingAll] = useState(false);
+
+  // Team (novo)
+  const [team, setTeam] = useState<Pokemon[]>([]);
 
   // Modal
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
@@ -905,9 +1208,7 @@ const App = () => {
     return r ? r.label : "Região";
   }, [region]);
 
-  // ------------------------
   // Load: região (home)
-  // ------------------------
   const loadRegion = async (rKey: RegionKey) => {
     const r = REGIONS.find((x) => x.key === rKey)!;
 
@@ -925,9 +1226,7 @@ const App = () => {
     }
   };
 
-  // ------------------------
-  // Load: todas as regiões (para Tipos e evolução universal)
-  // ------------------------
+  // Load: todas as regiões (para Tipos, Time e evolução universal)
   const loadAllRegions = async () => {
     if (isLoadingAll) return;
     setIsLoadingAll(true);
@@ -963,32 +1262,32 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
 
-  // ------------------------
   // Filtro (home)
-  // ------------------------
   useEffect(() => {
     let result = regionPokemon;
     if (searchTerm) {
       const lower = searchTerm.toLowerCase();
-      result = result.filter((p) => p.name.toLowerCase().includes(lower) || p.num.includes(lower));
+      result = result.filter(
+        (p) => p.name.toLowerCase().includes(lower) || p.num.includes(lower)
+      );
     }
     setFilteredRegionPokemon(result);
   }, [searchTerm, regionPokemon]);
 
-  // ------------------------
   // Evolução via PokeAPI (para qualquer geração)
-  // Correção principal: além dos "next" imediatos, geramos "nextChain" (cadeia linear completa)
-  // Ex.: Chikorita => [Bayleef, Meganium]
-  // ------------------------
   const fetchEvolutionForPokemon = async (p: Pokemon) => {
-    
-    const hasLocalEvo = Boolean((p as any).prev_evolution?.length || (p as any).next_evolution?.length);
+    const hasLocalEvo = Boolean(
+      (p as any).prev_evolution?.length || (p as any).next_evolution?.length
+    );
     if (hasLocalEvo) return;
 
     if (evoCache[p.id]) return;
 
     try {
-      const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${p.id}`);
+      // AQUI está a API citada: PokeAPI (species) + evolution_chain
+      const speciesRes = await fetch(
+        `https://pokeapi.co/api/v2/pokemon-species/${p.id}`
+      );
       if (!speciesRes.ok) return;
       const species = await speciesRes.json();
 
@@ -1002,7 +1301,6 @@ const App = () => {
       const root = evoData?.chain;
       if (!root) return;
 
-      // 1) Monta mapa id -> prev (ancestrais) e next (imediatos), e também adjacency id -> childrenIds
       const nodeMap = new Map<number, { prev: EvoRef[]; next: EvoRef[] }>();
       const childrenMap = new Map<number, number[]>();
 
@@ -1023,7 +1321,9 @@ const App = () => {
           .map((child: any) => {
             const cid = extractIdFromUrl(child?.species?.url);
             const cname =
-              typeof child?.species?.name === "string" ? formatName(child.species.name) : "";
+              typeof child?.species?.name === "string"
+                ? formatName(child.species.name)
+                : "";
             return cid ? { num: pad3(cid), name: cname || `#${pad3(cid)}` } : null;
           })
           .filter(Boolean) as EvoRef[];
@@ -1039,13 +1339,10 @@ const App = () => {
 
       build(root, []);
 
-      // 2) Calcula nextChain (cadeia linear completa) para cada id:
-      // segue filhos enquanto houver exatamente 1 filho (cadeia simples).
       const buildNextChain = (startId: number): EvoRef[] => {
         const chain: EvoRef[] = [];
         let cur = startId;
 
-        // Protege contra loops (não deve ocorrer, mas por segurança)
         const seen = new Set<number>();
         seen.add(cur);
 
@@ -1057,9 +1354,7 @@ const App = () => {
           if (!nxt || seen.has(nxt)) break;
           seen.add(nxt);
 
-          // Nome do próximo
           const nxtNameGuess = (() => {
-            // tenta encontrar em nextRefs do cur
             const curEntry = nodeMap.get(cur);
             const fromCur = curEntry?.next?.find((x) => Number(x.num) === nxt);
             if (fromCur?.name) return fromCur.name;
@@ -1097,9 +1392,7 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPokemon?.id]);
 
-  // ------------------------
   // Lookups
-  // ------------------------
   const lookupByNum = (num: string): Pokemon | null => {
     const fromAll = allPokemon.find((p) => p.num === num);
     if (fromAll) return fromAll;
@@ -1113,13 +1406,10 @@ const App = () => {
   const evolutionFor = (
     p: Pokemon
   ): { prev: EvoRef[]; next: EvoRef[]; nextChain: EvoRef[] } | null => {
-    // 1) Dataset local (Kanto etc.)
     const prevLocal = (p as any).prev_evolution as EvoRef[] | undefined;
     const nextLocal = (p as any).next_evolution as EvoRef[] | undefined;
 
     if ((prevLocal && prevLocal.length) || (nextLocal && nextLocal.length)) {
-      // Se dataset já trouxer a cadeia completa no next_evolution, usamos como nextChain também.
-      // Isso mantém Kanto correto e consistente.
       const next = nextLocal || [];
       return {
         prev: prevLocal || [],
@@ -1128,7 +1418,6 @@ const App = () => {
       };
     }
 
-    // 2) Cache PokeAPI
     const cached = evoCache[p.id];
     if (!cached) return null;
     return cached;
@@ -1146,10 +1435,25 @@ const App = () => {
 
       {view === "region" && (
         <RegionSelect
+          onCreateTeam={async () => {
+            setSelectedPokemon(null);
+            setView("team");
+            if (allPokemon.length === 0) await loadAllRegions();
+          }}
           onSelect={async (r) => {
             setView("home");
             await loadRegion(r);
           }}
+        />
+      )}
+
+      {view === "team" && (
+        <TeamBuilder
+          allPokemon={allPokemon}
+          isLoadingAll={isLoadingAll}
+          ensureAllLoaded={() => void loadAllRegions()}
+          team={team}
+          setTeam={setTeam}
         />
       )}
 
