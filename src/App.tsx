@@ -22,7 +22,7 @@ import { getRegionPokemons } from "./lib/pokemon";
 import type { Pokemon } from "./data/kanto";
 
 // ------------------------
-// Tipos: ícones
+// Types: icons
 // ------------------------
 import GO_Bug from "./assets/itypes/GO_Bug.png";
 import GO_Dark from "./assets/itypes/GO_Dark.png";
@@ -42,6 +42,206 @@ import GO_Psychic from "./assets/itypes/GO_Psychic.png";
 import GO_Rock from "./assets/itypes/GO_Rock.png";
 import GO_Steel from "./assets/itypes/GO_Steel.png";
 import GO_Water from "./assets/itypes/GO_Water.png";
+
+// ------------------------
+// i18n
+// ------------------------
+type Lang = "pt" | "en";
+
+const I18N = {
+  pt: {
+    nav: {
+      start: "Início",
+      types: "Tipos",
+      about: "Sobre",
+    },
+    common: {
+      back: "Voltar",
+      close: "Fechar",
+      loading: "Carregando…",
+      loadingPokemon: "Carregando Pokémons...",
+      openPokedex: "Abrir Pokédex",
+      notFound: "Nenhuma correspondência encontrada",
+      placeholderUnknown: "?",
+      fansNotice: "Este é um projeto realizado por fãs sem fins lucrativos.",
+      copyright: "© 2025 PokédexPro.",
+    },
+    regionSelect: {
+      title: "Escolha uma região.",
+      subtitle: "Selecione uma geração para abrir a Pokédex correspondente.",
+      createTeam: "Crie seu time",
+    },
+    home: {
+      titlePrefix: "escolha seu",
+      titleHighlight: "companheiro",
+      subtitle: "Explore a Pokédex da geração selecionada.",
+      searchPlaceholder: "Buscar Pokémon...",
+      countLoading: "Carregando Pokémons...",
+      count: (n: number) => `${n} Pokémon`,
+    },
+    team: {
+      badge: "Forme seu time",
+      title: "Eu escolho você!",
+      subtitle: "Escolha até 6 Pokémon de qualquer geração.",
+      yourTeam: "Seu time",
+      selectedCount: (n: number) => `${n}/6 selecionados`,
+      stats: "Estatísticas",
+      downloadCard: "Baixar card",
+      generating: "Gerando...",
+      clearTeam: "Limpar time",
+      close: "Fechar",
+      tipsTitle: "Feedback do time",
+      tipsSubtitle:
+        "Dicas rápidas baseadas nos tipos e fraquezas do seu time.",
+      teamTypes: "Tipos no time",
+      tips: "Dicas",
+      topWeaknesses: "Fraquezas mais frequentes",
+      emptySlot: (i: number) => `Pokémon ${i}`,
+      filterSearchPlaceholder: "Buscar Pokémon (nome ou número)...",
+      filterAll: "Todas",
+      filterTypes: "Tipos",
+      filterTypesTitle: "Filtrar por tipos",
+      clear: "Limpar",
+      noTypesSelected: "Nenhum tipo selecionado.",
+      typesSelected: (n: number) => `${n} tipo(s) selecionado(s).`,
+      clearAllFilters: "Limpar busca e filtros",
+      loadingAllTitle: "Carregando lista completa…",
+      loadingAllSubtitle:
+        "Isso pode levar alguns segundos no primeiro carregamento.",
+      availableCount: (n: number) => `${n} Pokémon disponíveis`,
+      regionNoneFound: "Nenhum Pokémon encontrado nesta geração",
+      adjustFilters: "Ajuste sua busca ou filtros.",
+      selected: "Selecionado",
+      select: "Selecionar",
+      remove: "Remover",
+      removeFromTeam: (name: string) => `Remover ${name} do time`,
+    },
+    types: {
+      title: "Tipos",
+      subtitle:
+        "Selecione um elemento para ver todos os Pokémon desse tipo (todas as regiões).",
+      searchPlaceholder: "Buscar tipo...",
+      backToTypes: "Voltar aos Tipos",
+      typeOf: (typeLabel: string) => `Pokémon do tipo ${typeLabel}`,
+      found: (n: number) => `${n} Pokémon encontrados.`,
+      infoDefault: "Tipo elemental do universo Pokémon.",
+    },
+    about: {
+      title: "Sobre o Projeto",
+      body1:
+        "PokédexPro é um projeto desenvolvido para um trabalho acadêmico da disciplina de Banco de Dados pela UFERSA.",
+      body2: "Desenvolvido com React, Tailwind CSS e muita dedicação.",
+    },
+    modal: {
+      species: "Espécie de Pokémon",
+      height: "Altura",
+      weight: "Peso",
+      weaknesses: "Fraquezas",
+      evolution: "Cadeia de Evolução",
+    },
+  },
+  en: {
+    nav: {
+      start: "Home",
+      types: "Types",
+      about: "About",
+    },
+    common: {
+      back: "Back",
+      close: "Close",
+      loading: "Loading…",
+      loadingPokemon: "Loading Pokémon...",
+      openPokedex: "Open Pokédex",
+      notFound: "No matches found",
+      placeholderUnknown: "?",
+      fansNotice: "This is a non-profit fan project.",
+      copyright: "© 2025 PokédexPro.",
+    },
+    regionSelect: {
+      title: "Choose a region.",
+      subtitle: "Select a generation to open the corresponding Pokédex.",
+      createTeam: "Build your team",
+    },
+    home: {
+      titlePrefix: "choose your",
+      titleHighlight: "partner",
+      subtitle: "Explore the Pokédex for the selected generation.",
+      searchPlaceholder: "Search Pokémon...",
+      countLoading: "Loading Pokémon...",
+      count: (n: number) => `${n} Pokémon`,
+    },
+    team: {
+      badge: "Build your team",
+      title: "I choose you!",
+      subtitle: "Pick up to 6 Pokémon from any generation.",
+      yourTeam: "Your team",
+      selectedCount: (n: number) => `${n}/6 selected`,
+      stats: "Stats",
+      downloadCard: "Download card",
+      generating: "Generating...",
+      clearTeam: "Clear team",
+      close: "Close",
+      tipsTitle: "Team feedback",
+      tipsSubtitle:
+        "Quick tips based on your team types and repeated weaknesses.",
+      teamTypes: "Team types",
+      tips: "Tips",
+      topWeaknesses: "Most common weaknesses",
+      emptySlot: (i: number) => `Pokémon ${i}`,
+      filterSearchPlaceholder: "Search Pokémon (name or number)...",
+      filterAll: "All",
+      filterTypes: "Types",
+      filterTypesTitle: "Filter by types",
+      clear: "Clear",
+      noTypesSelected: "No types selected.",
+      typesSelected: (n: number) => `${n} type(s) selected.`,
+      clearAllFilters: "Clear search and filters",
+      loadingAllTitle: "Loading full list…",
+      loadingAllSubtitle:
+        "This can take a few seconds on the first load.",
+      availableCount: (n: number) => `${n} Pokémon available`,
+      regionNoneFound: "No Pokémon found in this generation",
+      adjustFilters: "Adjust your search or filters.",
+      selected: "Selected",
+      select: "Select",
+      remove: "Remove",
+      removeFromTeam: (name: string) => `Remove ${name} from team`,
+    },
+    types: {
+      title: "Types",
+      subtitle:
+        "Select an element to view all Pokémon of that type (all regions).",
+      searchPlaceholder: "Search type...",
+      backToTypes: "Back to Types",
+      typeOf: (typeLabel: string) => `Pokémon of type ${typeLabel}`,
+      found: (n: number) => `${n} Pokémon found.`,
+      infoDefault: "An elemental Pokémon type.",
+    },
+    about: {
+      title: "About the Project",
+      body1:
+        "PokédexPro is a project built for an academic assignment in Database Systems at UFERSA.",
+      body2: "Built with React, Tailwind CSS, and a lot of dedication.",
+    },
+    modal: {
+      species: "Pokémon Species",
+      height: "Height",
+      weight: "Weight",
+      weaknesses: "Weaknesses",
+      evolution: "Evolution Chain",
+    },
+  },
+} as const;
+
+const t = (lang: Lang, path: string): string => {
+  const parts = path.split(".");
+  let cur: any = I18N[lang];
+  for (const p of parts) {
+    if (cur && typeof cur === "object" && p in cur) cur = cur[p];
+    else return path;
+  }
+  return typeof cur === "string" ? cur : path;
+};
 
 // ------------------------
 // Helpers
@@ -74,7 +274,7 @@ const POKEBALL_PLACEHOLDER =
   "https://www.kindpng.com/picc/m/604-6046492_pokeball-png-free-download-circle-transparent-png.png";
 
 // ------------------------
-// Tipos: descrição
+// Types: assets + names + descriptions (PT/EN)
 // ------------------------
 const TYPE_IMAGES: Record<string, string> = {
   Grass: GO_Grass,
@@ -97,7 +297,7 @@ const TYPE_IMAGES: Record<string, string> = {
   Dark: GO_Dark,
 };
 
-const TYPE_TRANSLATIONS: Record<string, string> = {
+const TYPE_TRANSLATIONS_PT: Record<string, string> = {
   Grass: "Grama",
   Poison: "Veneno",
   Fire: "Fogo",
@@ -118,7 +318,7 @@ const TYPE_TRANSLATIONS: Record<string, string> = {
   Dark: "Sombrio",
 };
 
-const TYPE_DESCRIPTIONS: Record<string, string> = {
+const TYPE_DESCRIPTIONS_PT: Record<string, string> = {
   Normal:
     "Os Pokémons do tipo Normal habitam uma grande variedade de biomas, como campos, florestas, pradarias, cidades e áreas urbanas, sendo um dos tipos mais comuns e adaptáveis.",
   Fire:
@@ -157,8 +357,55 @@ const TYPE_DESCRIPTIONS: Record<string, string> = {
     "Os Pokémons do tipo Fada habitam principalmente locais na natureza, como florestas densas, campos floridos, rios e montanhas",
 };
 
+const TYPE_DESCRIPTIONS_EN: Record<string, string> = {
+  Normal:
+    "Normal-type Pokémon thrive across many environments—fields, forests, cities, and towns—making them among the most common and adaptable.",
+  Fire:
+    "Fire-type Pokémon are usually found in hot and open areas like deserts, grasslands, and volcanic mountains.",
+  Water:
+    "Water-type Pokémon inhabit diverse aquatic environments such as oceans, rivers, lakes, swamps, and reefs, adapting to different depths and currents.",
+  Electric:
+    "Electric-type Pokémon appear in many habitats, including cities, forests, and industrial areas, often drawn to sources of electricity.",
+  Grass:
+    "Grass-type Pokémon live in natural areas with dense vegetation—forests, gardens, jungles—and often blend into flora.",
+  Ice:
+    "Ice-type Pokémon live in extreme cold—icy peaks, glaciers, frozen caves, and polar regions—adapted to very low temperatures.",
+  Fighting:
+    "Fighting-type Pokémon are often seen in training-focused locations (cities, gyms), but also appear in forests, fields, and mountains.",
+  Poison:
+    "Poison-type Pokémon are commonly found in caves, swamps, and polluted areas.",
+  Ground:
+    "Ground-type Pokémon inhabit caves, mountains, deserts, and rocky or sandy terrain, often using the earth to hide or battle.",
+  Flying:
+    "Flying-type Pokémon are found in high places—the skies, mountains, and treetops—where they can perch and take off easily.",
+  Psychic:
+    "Psychic-type Pokémon appear in many habitats—from fields and forests to urban parks—often linked to calmer environments.",
+  Bug:
+    "Bug-type Pokémon usually live in forests and tall-grass areas with abundant vegetation.",
+  Rock:
+    "Rock-type Pokémon are found in rocky environments—mountains, caves, quarries—and places rich in minerals and fossils.",
+  Ghost:
+    "Ghost-type Pokémon inhabit dark, isolated, or eerie places such as abandoned towers, shadowy forests, and caves.",
+  Dragon:
+    "Dragon-type Pokémon are rare and powerful, often living in remote areas near water, mountains, caves, or hidden islands.",
+  Dark:
+    "Dark-type Pokémon tend to inhabit places that match their nature—quiet, shadowy, and secluded areas.",
+  Steel:
+    "Steel-type Pokémon are often found in industrial or urban settings, as well as rocky regions rich in metals.",
+  Fairy:
+    "Fairy-type Pokémon frequently live in natural, serene places—lush forests, flower fields, rivers, and mountains.",
+};
+
+const typeLabel = (lang: Lang, type: string) =>
+  lang === "pt" ? TYPE_TRANSLATIONS_PT[type] || type : type;
+
+const typeDescription = (lang: Lang, type: string) => {
+  if (lang === "en") return TYPE_DESCRIPTIONS_EN[type] || TYPE_DESCRIPTIONS_PT[type];
+  return TYPE_DESCRIPTIONS_PT[type] || TYPE_DESCRIPTIONS_EN[type];
+};
+
 // ------------------------
-// Regiões
+// Regions
 // ------------------------
 const REGION_GRADIENTS: Record<RegionKey, string> = {
   kanto:
@@ -181,7 +428,6 @@ const REGION_GRADIENTS: Record<RegionKey, string> = {
     "from-red-500 via-fuchsia-400 to-violet-500 hover:from-red-600 hover:via-fuchsia-500 hover:to-violet-600",
 };
 
-// Gradiente sutil para “faixa” do header (easter egg)
 const REGION_HEADER_STRIP: Record<RegionKey, string> = {
   kanto: "from-red-400 via-yellow-400 to-blue-400",
   johto: "from-amber-400 via-slate-300 to-zinc-400",
@@ -323,16 +569,19 @@ const SkeletonPokemonCard = () => (
 );
 
 const Header = ({
+  lang,
+  setLang,
   setView,
   currentView,
   regionKeyForEasterEgg,
 }: {
+  lang: Lang;
+  setLang: (l: Lang) => void;
   setView: (v: "region" | "home" | "types" | "about" | "team") => void;
   currentView: "region" | "home" | "types" | "about" | "team";
   regionKeyForEasterEgg?: RegionKey;
 }) => (
   <header className="sticky top-0 z-50 border-b border-white/60 bg-white/70 backdrop-blur-xl">
-    {/* Easter egg sutil: faixa gradiente muda conforme a região (somente quando informado) */}
     {regionKeyForEasterEgg && (
       <div
         className={[
@@ -342,7 +591,8 @@ const Header = ({
       />
     )}
 
-    <div className="container mx-auto px-6 h-16 flex items-center justify-center">
+    <div className="container mx-auto px-6 h-16 flex items-center">
+      <div className="flex-1" />
       <nav className="flex items-center justify-center gap-2 text-sm font-extrabold text-slate-600">
         <button
           onClick={() => setView("region")}
@@ -353,7 +603,7 @@ const Header = ({
               : "hover:bg-slate-50 hover:text-slate-900",
           ].join(" ")}
         >
-          Início
+          {t(lang, "nav.start")}
         </button>
 
         <button
@@ -365,7 +615,7 @@ const Header = ({
               : "hover:bg-slate-50 hover:text-slate-900",
           ].join(" ")}
         >
-          Tipos
+          {t(lang, "nav.types")}
         </button>
 
         <button
@@ -377,9 +627,26 @@ const Header = ({
               : "hover:bg-slate-50 hover:text-slate-900",
           ].join(" ")}
         >
-          Sobre
+          {t(lang, "nav.about")}
         </button>
       </nav>
+
+      <div className="flex-1 flex items-center justify-end">
+        <button
+          onClick={() => setLang(lang === "pt" ? "en" : "pt")}
+          className={[
+            "inline-flex items-center gap-2 px-3 py-2 rounded-full",
+            "bg-white/80 border border-white/60 shadow-sm",
+            "text-xs font-extrabold text-slate-700",
+            "hover:bg-white transition",
+            "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
+          ].join(" ")}
+          aria-label="Toggle language"
+          title="Toggle language"
+        >
+          {lang === "pt" ? "PT-BR" : "EN"}
+        </button>
+      </div>
     </div>
   </header>
 );
@@ -387,11 +654,11 @@ const Header = ({
 const FilterDock = ({
   searchTerm,
   setSearchTerm,
-  placeholder = "Buscar...",
+  placeholder,
 }: {
   searchTerm: string;
   setSearchTerm: (s: string) => void;
-  placeholder?: string;
+  placeholder: string;
 }) => (
   <div className="sticky top-20 z-40 flex justify-center w-full px-4 mb-10">
     <div className="max-w-md w-full rounded-full p-1 bg-white/75 backdrop-blur-xl border border-white/60 shadow-[0_14px_40px_rgba(15,23,42,0.12)]">
@@ -415,7 +682,7 @@ const FilterDock = ({
 );
 
 // ------------------------
-// Easter egg background por geração (sutil, sem poluir)
+// Easter egg background per generation
 // ------------------------
 const RegionEasterEgg = ({ regionKey }: { regionKey: RegionKey }) => {
   const egg = useMemo(() => {
@@ -495,27 +762,47 @@ const RegionEasterEgg = ({ regionKey }: { regionKey: RegionKey }) => {
 
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden">
-      {/* blobs principais (já existiam) */}
       <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-cyan-200/30 blur-3xl" />
       <div className="absolute top-1/3 -right-24 w-96 h-96 rounded-full bg-fuchsia-200/25 blur-3xl" />
       <div className="absolute -bottom-24 left-1/3 w-96 h-96 rounded-full bg-amber-200/25 blur-3xl" />
 
-      {/* partículas/bolhas sutis por região */}
-      <div className={["absolute top-24 left-[12%] w-20 h-20 rounded-full blur-2xl", egg.a].join(" ")} />
-      <div className={["absolute top-[28%] right-[14%] w-16 h-16 rounded-full blur-2xl", egg.b].join(" ")} />
-      <div className={["absolute bottom-[18%] left-[22%] w-24 h-24 rounded-full blur-3xl", egg.c].join(" ")} />
-      <div className={["absolute bottom-[10%] right-[26%] w-14 h-14 rounded-full blur-2xl", egg.d].join(" ")} />
+      <div
+        className={[
+          "absolute top-24 left-[12%] w-20 h-20 rounded-full blur-2xl",
+          egg.a,
+        ].join(" ")}
+      />
+      <div
+        className={[
+          "absolute top-[28%] right-[14%] w-16 h-16 rounded-full blur-2xl",
+          egg.b,
+        ].join(" ")}
+      />
+      <div
+        className={[
+          "absolute bottom-[18%] left-[22%] w-24 h-24 rounded-full blur-3xl",
+          egg.c,
+        ].join(" ")}
+      />
+      <div
+        className={[
+          "absolute bottom-[10%] right-[26%] w-14 h-14 rounded-full blur-2xl",
+          egg.d,
+        ].join(" ")}
+      />
     </div>
   );
 };
 
 // ------------------------
-// Tela: Seleção de Região
+// Screen: Region Selection
 // ------------------------
 const RegionSelect = ({
+  lang,
   onSelect,
   onCreateTeam,
 }: {
+  lang: Lang;
   onSelect: (region: RegionKey) => void;
   onCreateTeam: () => void;
 }) => (
@@ -528,19 +815,22 @@ const RegionSelect = ({
           "hover:bg-white/90 hover:border-white/80 transition",
           "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
         ].join(" ")}
-        aria-label="Crie seu time"
+        aria-label={t(lang, "regionSelect.createTeam")}
       >
         <img src={iconPng} alt="PokédexPro" className="w-5 h-5" />
         <span className="text-sm font-extrabold text-slate-700">
-          Crie seu time
+          {t(lang, "regionSelect.createTeam")}
         </span>
       </button>
 
       <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 mt-6 mb-4">
-        Escolha uma <span className="text-sky-600">região</span>.
+        {t(lang, "regionSelect.title").split(" ").slice(0, -1).join(" ")}{" "}
+        <span className="text-sky-600">
+          {t(lang, "regionSelect.title").split(" ").slice(-1)}
+        </span>
       </h1>
       <p className="text-slate-600 max-w-xl mx-auto">
-        Selecione uma geração para abrir a Pokédex correspondente.
+        {t(lang, "regionSelect.subtitle")}
       </p>
     </div>
 
@@ -569,7 +859,7 @@ const RegionSelect = ({
           </div>
 
           <div className="relative z-10 mt-5 inline-flex items-center gap-2 text-white/95 text-sm font-extrabold">
-            Abrir Pokédex <ArrowRight size={16} />
+            {t(lang, "common.openPokedex")} <ArrowRight size={16} />
           </div>
         </button>
       ))}
@@ -581,6 +871,7 @@ const RegionSelect = ({
 // Home
 // ------------------------
 const Home = ({
+  lang,
   searchTerm,
   setSearchTerm,
   filteredPokemon,
@@ -588,6 +879,7 @@ const Home = ({
   regionLabel,
   isLoading,
 }: {
+  lang: Lang;
   searchTerm: string;
   setSearchTerm: (s: string) => void;
   filteredPokemon: Pokemon[];
@@ -605,28 +897,29 @@ const Home = ({
       </div>
 
       <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 mt-6 mb-3">
-        {regionLabel}: escolha seu{" "}
-        <span className="text-sky-600">companheiro</span>.
+        {regionLabel}: {t(lang, "home.titlePrefix")}{" "}
+        <span className="text-sky-600">{t(lang, "home.titleHighlight")}</span>.
       </h1>
 
       <p className="text-slate-600 max-w-xl mx-auto">
-        Explore a Pokédex da geração selecionada.
+        {t(lang, "home.subtitle")}
       </p>
     </div>
 
     <FilterDock
       searchTerm={searchTerm}
       setSearchTerm={setSearchTerm}
-      placeholder="Buscar Pokémon..."
+      placeholder={t(lang, "home.searchPlaceholder")}
     />
 
     <div className="text-center mb-8">
       <span className="inline-flex items-center gap-2 bg-white/75 px-4 py-2 rounded-full text-xs font-extrabold text-slate-600 border border-white/60 shadow-sm">
-        {isLoading ? "Carregando Pokémons..." : `${filteredPokemon.length} Pokémon`}
+        {isLoading
+          ? t(lang, "home.countLoading")
+          : I18N[lang].home.count(filteredPokemon.length)}
       </span>
     </div>
 
-    {/* Skeleton grid (substitui “Carregando…”) */}
     {isLoading ? (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -650,7 +943,7 @@ const Home = ({
             <div className="w-16 h-16 bg-white/80 border border-white/60 rounded-full flex items-center justify-center mb-4 shadow-sm">
               <Search size={22} />
             </div>
-            <p className="font-bold">Nenhuma correspondência encontrada</p>
+            <p className="font-bold">{t(lang, "common.notFound")}</p>
           </div>
         )}
       </>
@@ -659,18 +952,17 @@ const Home = ({
 );
 
 // ------------------------
-// Team Builder (novo)
-// - escolha até 6 Pokémon, de TODAS as gerações
-// - listagem agrupada por geração (REGIONS)
-// - Cards: apenas imagem (mais prático)
+// Team Builder
 // ------------------------
 const TeamBuilder = ({
+  lang,
   allPokemon,
   isLoadingAll,
   ensureAllLoaded,
   team,
   setTeam,
 }: {
+  lang: Lang;
   allPokemon: Pokemon[];
   isLoadingAll: boolean;
   ensureAllLoaded: () => void;
@@ -679,121 +971,141 @@ const TeamBuilder = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
-    // NOVO: estatísticas + download do card
+  // Stats + card download
   const [showStats, setShowStats] = useState(false);
   const [isDownloadingCard, setIsDownloadingCard] = useState(false);
   const teamCardRef = useRef<HTMLDivElement | null>(null);
 
-    const teamStats = useMemo(() => {
+  const teamStats = useMemo(() => {
     const typeCount = new Map<string, number>();
     const weaknessCount = new Map<string, number>();
 
     for (const p of team) {
-      for (const t of p.type || []) {
-        typeCount.set(t, (typeCount.get(t) || 0) + 1);
+      for (const t0 of p.type || []) {
+        typeCount.set(t0, (typeCount.get(t0) || 0) + 1);
       }
       for (const w of p.weaknesses || []) {
         weaknessCount.set(w, (weaknessCount.get(w) || 0) + 1);
       }
     }
 
-    const typesSorted = Array.from(typeCount.entries()).sort((a, b) => b[1] - a[1]);
-    const weaknessesSorted = Array.from(weaknessCount.entries()).sort((a, b) => b[1] - a[1]);
+    const typesSorted = Array.from(typeCount.entries()).sort(
+      (a, b) => b[1] - a[1]
+    );
+    const weaknessesSorted = Array.from(weaknessCount.entries()).sort(
+      (a, b) => b[1] - a[1]
+    );
 
     const teamTypesSet = new Set(typeCount.keys());
 
-    // Heurísticas simples de “como reduzir fraqueza”
-    // (não é um type-chart completo, mas cobre os casos mais intuitivos)
-    const WEAKNESS_FIX: Record<
-      string,
-      { add: string[]; note: string }
-    > = {
-      Electric: {
-        add: ["Ground"],
-        note: "Ground é imune a golpes Elétricos.",
-      },
-      Ground: {
-        add: ["Water", "Grass", "Ice"],
-        note: "Esses tipos costumam responder bem a golpes Terrestres.",
-      },
-      Rock: {
-        add: ["Water", "Grass", "Fighting", "Ground", "Steel"],
-        note: "Esses tipos ajudam a lidar com adversários do tipo Pedra.",
-      },
-      Fire: {
-        add: ["Water", "Ground", "Rock"],
-        note: "Boa resposta contra equipes focadas em Fogo.",
-      },
-      Water: {
-        add: ["Electric", "Grass"],
-        note: "Cobertura clássica contra Água.",
-      },
-      Grass: {
-        add: ["Fire", "Ice", "Flying", "Bug", "Poison"],
-        note: "Boas opções para enfrentar Grama.",
-      },
-      Ice: {
-        add: ["Fire", "Fighting", "Rock", "Steel"],
-        note: "Tipos fortes contra Gelo.",
-      },
-      Fighting: {
-        add: ["Flying", "Psychic", "Fairy"],
-        note: "Cobertura típica contra Lutador.",
-      },
-      Psychic: {
-        add: ["Bug", "Ghost", "Dark"],
-        note: "Esses tipos ajudam a enfrentar Psíquico.",
-      },
-      Dark: {
-        add: ["Fighting", "Bug", "Fairy"],
-        note: "Boa resposta contra Sombrio.",
-      },
-      Dragon: {
-        add: ["Ice", "Fairy", "Dragon"],
-        note: "Respostas tradicionais contra Dragão.",
-      },
-      Fairy: {
-        add: ["Steel", "Poison"],
-        note: "Tipos fortes contra Fada.",
-      },
-      Ghost: {
-        add: ["Dark", "Ghost"],
-        note: "Boa resposta contra Fantasma.",
-      },
-      Bug: {
-        add: ["Fire", "Flying", "Rock"],
-        note: "Cobertura comum contra Inseto.",
-      },
-      Poison: {
-        add: ["Ground", "Psychic"],
-        note: "Boa resposta contra Veneno.",
-      },
-      Steel: {
-        add: ["Fire", "Fighting", "Ground"],
-        note: "Cobertura comum contra Metal.",
-      },
-      Flying: {
-        add: ["Electric", "Ice", "Rock"],
-        note: "Cobertura comum contra Voador.",
-      },
-      Normal: {
-        add: ["Fighting"],
-        note: "Resposta clássica contra Normal.",
-      },
-    };
+    const WEAKNESS_FIX: Record<string, { add: string[]; notePT: string; noteEN: string }> =
+      {
+        Electric: {
+          add: ["Ground"],
+          notePT: "Ground é imune a golpes Elétricos.",
+          noteEN: "Ground is immune to Electric moves.",
+        },
+        Ground: {
+          add: ["Water", "Grass", "Ice"],
+          notePT: "Esses tipos costumam responder bem a golpes Terrestres.",
+          noteEN: "These types often respond well against Ground threats.",
+        },
+        Rock: {
+          add: ["Water", "Grass", "Fighting", "Ground", "Steel"],
+          notePT: "Esses tipos ajudam a lidar com adversários do tipo Pedra.",
+          noteEN: "These types help deal with Rock opponents.",
+        },
+        Fire: {
+          add: ["Water", "Ground", "Rock"],
+          notePT: "Boa resposta contra equipes focadas em Fogo.",
+          noteEN: "Strong answers against Fire-focused teams.",
+        },
+        Water: {
+          add: ["Electric", "Grass"],
+          notePT: "Cobertura clássica contra Água.",
+          noteEN: "Classic coverage against Water.",
+        },
+        Grass: {
+          add: ["Fire", "Ice", "Flying", "Bug", "Poison"],
+          notePT: "Boas opções para enfrentar Grama.",
+          noteEN: "Good options to face Grass.",
+        },
+        Ice: {
+          add: ["Fire", "Fighting", "Rock", "Steel"],
+          notePT: "Tipos fortes contra Gelo.",
+          noteEN: "Strong types against Ice.",
+        },
+        Fighting: {
+          add: ["Flying", "Psychic", "Fairy"],
+          notePT: "Cobertura típica contra Lutador.",
+          noteEN: "Typical coverage against Fighting.",
+        },
+        Psychic: {
+          add: ["Bug", "Ghost", "Dark"],
+          notePT: "Esses tipos ajudam a enfrentar Psíquico.",
+          noteEN: "These types help handle Psychic.",
+        },
+        Dark: {
+          add: ["Fighting", "Bug", "Fairy"],
+          notePT: "Boa resposta contra Sombrio.",
+          noteEN: "Good answers against Dark.",
+        },
+        Dragon: {
+          add: ["Ice", "Fairy", "Dragon"],
+          notePT: "Respostas tradicionais contra Dragão.",
+          noteEN: "Traditional answers against Dragon.",
+        },
+        Fairy: {
+          add: ["Steel", "Poison"],
+          notePT: "Tipos fortes contra Fada.",
+          noteEN: "Strong types against Fairy.",
+        },
+        Ghost: {
+          add: ["Dark", "Ghost"],
+          notePT: "Boa resposta contra Fantasma.",
+          noteEN: "Good answers against Ghost.",
+        },
+        Bug: {
+          add: ["Fire", "Flying", "Rock"],
+          notePT: "Cobertura comum contra Inseto.",
+          noteEN: "Common coverage against Bug.",
+        },
+        Poison: {
+          add: ["Ground", "Psychic"],
+          notePT: "Boa resposta contra Veneno.",
+          noteEN: "Good answers against Poison.",
+        },
+        Steel: {
+          add: ["Fire", "Fighting", "Ground"],
+          notePT: "Cobertura comum contra Metal.",
+          noteEN: "Common coverage against Steel.",
+        },
+        Flying: {
+          add: ["Electric", "Ice", "Rock"],
+          notePT: "Cobertura comum contra Voador.",
+          noteEN: "Common coverage against Flying.",
+        },
+        Normal: {
+          add: ["Fighting"],
+          notePT: "Resposta clássica contra Normal.",
+          noteEN: "Classic answer against Normal.",
+        },
+      };
 
-    // Sugestões com JSX (ícones)
     const suggestions: JSX.Element[] = [];
 
     const pushTip = (key: string, el: JSX.Element) => {
-      // evita duplicações grosseiras
       if (!suggestions.some((x) => (x.key as any) === key)) suggestions.push(el);
     };
 
     if (team.length === 0) {
       pushTip(
         "empty",
-        <span key="empty">Monte um time (até 6) para receber sugestões mais precisas.</span>
+        <span key="empty">
+          {lang === "pt"
+            ? "Monte um time (até 6) para receber sugestões mais precisas."
+            : "Build a team (up to 6) to receive more precise suggestions."}
+        </span>
       );
       return { typesSorted, weaknessesSorted, suggestions };
     }
@@ -802,64 +1114,84 @@ const TeamBuilder = ({
       pushTip(
         "fill6",
         <span key="fill6">
-          Considere completar o time com <strong>6 Pokémon</strong> para melhorar a cobertura.
+          {lang === "pt" ? (
+            <>
+              Considere completar o time com <strong>6 Pokémon</strong> para
+              melhorar a cobertura.
+            </>
+          ) : (
+            <>
+              Consider filling your team to <strong>6 Pokémon</strong> to improve
+              coverage.
+            </>
+          )}
         </span>
       );
     }
 
-    // Pouca diversidade de tipos
     if (teamTypesSet.size <= 3) {
       pushTip(
         "lowdiv",
         <span key="lowdiv">
-          Seu time tem pouca diversidade de tipos. Variar os elementos ajuda a reduzir fraquezas repetidas.
+          {lang === "pt"
+            ? "Seu time tem pouca diversidade de tipos. Variar os elementos ajuda a reduzir fraquezas repetidas."
+            : "Your team has low type diversity. Varying types helps reduce repeated weaknesses."}
         </span>
       );
     }
 
-    // Repetição alta do mesmo tipo
-    const repeated = typesSorted.filter(([, c]) => c >= 3).map(([t]) => t);
+    const repeated = typesSorted.filter(([, c]) => c >= 3).map(([tt]) => tt);
     if (repeated.length > 0) {
       pushTip(
         "repeated",
-        <span key="repeated" className="inline-flex items-center gap-2 flex-wrap">
-          Muitos Pokémon compartilham:
-          {repeated.map((t) => (
-            <span key={t} className="inline-flex items-center gap-1">
-              <TypeBadge type={t} size="sm" />
+        <span
+          key="repeated"
+          className="inline-flex items-center gap-2 flex-wrap"
+        >
+          {lang === "pt" ? "Muitos Pokémon compartilham:" : "Many Pokémon share:"}
+          {repeated.map((tt) => (
+            <span key={tt} className="inline-flex items-center gap-1">
+              <TypeBadge type={tt} size="sm" />
             </span>
           ))}
-          Isso pode aumentar fraquezas duplicadas.
+          {lang === "pt"
+            ? "Isso pode aumentar fraquezas duplicadas."
+            : "This can increase duplicated weaknesses."}
         </span>
       );
     }
 
-    // Dicas baseadas nas fraquezas mais recorrentes
-    const topWeak = weaknessesSorted.slice(0, 5); // pega até 5 fraquezas
+    const topWeak = weaknessesSorted.slice(0, 5);
     for (const [weakType, count] of topWeak) {
       const fix = WEAKNESS_FIX[weakType];
       if (!fix) continue;
 
-      // sugere apenas tipos que ainda NÃO existem no time
-      const candidates = fix.add.filter((t) => !teamTypesSet.has(t));
+      const candidates = fix.add.filter((tt) => !teamTypesSet.has(tt));
       if (candidates.length === 0) continue;
 
       const key = `fix-${weakType}`;
       pushTip(
         key,
         <span key={key} className="inline-flex items-center gap-2 flex-wrap">
-          Sua fraqueza mais recorrente inclui:
+          {lang === "pt"
+            ? "Sua fraqueza mais recorrente inclui:"
+            : "A recurring weakness includes:"}
           <span className="inline-flex items-center gap-1">
             <TypeBadge type={weakType} size="sm" />
-            <span className="text-xs font-extrabold text-slate-600">x{count}</span>
+            <span className="text-xs font-extrabold text-slate-600">
+              x{count}
+            </span>
           </span>
-          • Considerar adicionar:
+          •{" "}
+          {lang === "pt" ? "Considere adicionar:" : "Consider adding:"}
           <span className="inline-flex items-center gap-1 flex-wrap">
-            {candidates.slice(0, 3).map((t) => (
-              <TypeBadge key={t} type={t} size="sm" />
+            {candidates.slice(0, 3).map((tt) => (
+              <TypeBadge key={tt} type={tt} size="sm" />
             ))}
           </span>
-          <span className="text-slate-500">({fix.note})</span>
+          <span className="text-slate-500">
+            ({lang === "pt" ? fix.notePT : fix.noteEN})
+          </span>
         </span>
       );
     }
@@ -869,7 +1201,7 @@ const TeamBuilder = ({
       weaknessesSorted,
       suggestions,
     };
-  }, [team]);
+  }, [team, lang]);
 
   const downloadTeamCard = async () => {
     if (!teamCardRef.current || team.length === 0) return;
@@ -886,14 +1218,14 @@ const TeamBuilder = ({
       const dataUrl = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = dataUrl;
-      a.download = `pokedexpro-time.png`;
+      a.download = `pokedexpro-team.png`;
       a.click();
     } finally {
       setIsDownloadingCard(false);
     }
   };
 
-  // NOVO: filtros
+  // filters
   const [regionFilter, setRegionFilter] = useState<RegionKey | "all">("all");
   const [typeFilters, setTypeFilters] = useState<string[]>([]);
   const [typesOpen, setTypesOpen] = useState(false);
@@ -904,7 +1236,6 @@ const TeamBuilder = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // fecha popover ao clicar fora
   useEffect(() => {
     if (!typesOpen) return;
 
@@ -937,15 +1268,16 @@ const TeamBuilder = ({
     return m;
   }, []);
 
-  // NOVO: tipos disponíveis (para o filtro)
   const allTypes = useMemo(() => {
     const types = new Set<string>();
-    allPokemon.forEach((p) => p.type.forEach((t) => types.add(t)));
+    allPokemon.forEach((p) => p.type.forEach((tt) => types.add(tt)));
     return Array.from(types).sort((a, b) => a.localeCompare(b));
   }, [allPokemon]);
 
-  const toggleType = (t: string) => {
-    setTypeFilters((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  const toggleType = (tt: string) => {
+    setTypeFilters((prev) =>
+      prev.includes(tt) ? prev.filter((x) => x !== tt) : [...prev, tt]
+    );
   };
 
   const clearFilters = () => {
@@ -956,18 +1288,15 @@ const TeamBuilder = ({
   const filteredAll = useMemo(() => {
     let list = allPokemon;
 
-    // filtro por geração
     if (regionFilter !== "all") {
       const r = regionMap.get(regionFilter);
       if (r) list = list.filter((p) => p.id >= r.from && p.id <= r.to);
     }
 
-    // filtro por tipos (OR: qualquer tipo selecionado)
     if (typeFilters.length > 0) {
-      list = list.filter((p) => p.type.some((t) => typeFilters.includes(t)));
+      list = list.filter((p) => p.type.some((tt) => typeFilters.includes(tt)));
     }
 
-    // busca
     if (searchTerm) {
       const lower = searchTerm.toLowerCase();
       list = list.filter(
@@ -981,7 +1310,6 @@ const TeamBuilder = ({
     return list;
   }, [allPokemon, searchTerm, regionFilter, typeFilters, regionMap]);
 
-  // regiões a exibir (se filtrou por geração, mostra só a seção daquela)
   const regionsToShow = useMemo(() => {
     if (regionFilter === "all") return REGIONS;
     const r = regionMap.get(regionFilter);
@@ -995,6 +1323,9 @@ const TeamBuilder = ({
     });
   }, [filteredAll, regionsToShow]);
 
+  // ------------------------
+  // Team slot (updated)
+  // ------------------------
   const TeamSlot = ({ index }: { index: number }) => {
     const p = team[index];
     if (!p) {
@@ -1003,12 +1334,12 @@ const TeamBuilder = ({
           className={[
             "rounded-3xl border border-dashed border-slate-200",
             "bg-white/55 backdrop-blur-xl",
-            "h-20 flex items-center justify-center",
+            "min-h-[160px] flex items-center justify-center",
             "shadow-[0_10px_30px_rgba(15,23,42,0.06)]",
           ].join(" ")}
         >
           <span className="text-xs font-extrabold text-slate-400">
-            Pokémon {index + 1}
+            {I18N[lang].team.emptySlot(index + 1)}
           </span>
         </div>
       );
@@ -1019,39 +1350,10 @@ const TeamBuilder = ({
         className={[
           "relative rounded-3xl border border-white/60 bg-white/75 backdrop-blur-xl",
           "shadow-[0_12px_30px_rgba(15,23,42,0.08)]",
-          "h-20 flex items-center gap-3 px-4",
+          "min-h-[160px] px-4 py-4",
+          "flex flex-col items-center justify-center text-center",
         ].join(" ")}
       >
-        <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
-          <img
-            src={p.img}
-            alt={p.name}
-            className="w-10 h-10 object-contain"
-            onError={(e) => {
-              const idNum = Number(p.num);
-              (e.target as HTMLImageElement).src = Number.isFinite(idNum)
-                ? toSerebiiImg(idNum)
-                : "https://via.placeholder.com/64?text=?";
-            }}
-          />
-        </div>
-
-        <div className="min-w-0 flex-1 text-left">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-extrabold text-slate-800 truncate">
-              {p.name}
-            </span>
-            <span className="text-xs font-black text-slate-400 font-mono">
-              #{p.num}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 mt-1">
-            {p.type.slice(0, 2).map((t) => (
-              <TypeBadge key={t} type={t} size="sm" />
-            ))}
-          </div>
-        </div>
-
         <button
           onClick={() => removeFromTeam(p.id)}
           className={[
@@ -1061,15 +1363,45 @@ const TeamBuilder = ({
             "flex items-center justify-center",
             "focus:outline-none focus:ring-4 focus:ring-rose-200/60",
           ].join(" ")}
-          aria-label={`Remover ${p.name} do time`}
+          aria-label={I18N[lang].team.removeFromTeam(p.name)}
+          title={t(lang, "team.remove")}
         >
           <X size={16} />
         </button>
+
+        <div className="w-24 h-24 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+          <img
+            src={p.img}
+            alt={p.name}
+            className="w-20 h-20 object-contain drop-shadow-sm"
+            onError={(e) => {
+              const idNum = Number(p.num);
+              (e.target as HTMLImageElement).src = Number.isFinite(idNum)
+                ? toSerebiiImg(idNum)
+                : "https://via.placeholder.com/96?text=?";
+            }}
+          />
+        </div>
+
+        <div className="mt-3">
+          <div className="text-sm font-extrabold text-slate-800 leading-tight">
+            {p.name}
+          </div>
+          <div className="text-[11px] font-black text-slate-400 font-mono mt-0.5">
+            #{p.num}
+          </div>
+
+          <div className="mt-2 flex items-center justify-center gap-1.5">
+            {p.type.slice(0, 2).map((tt) => (
+              <TypeBadge key={tt} type={tt} size="sm" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   };
 
-  // Card minimalista: apenas imagem + estado selecionado
+  // Minimal pick tile
   const PokemonPickTile = ({ p }: { p: Pokemon }) => {
     const selected = teamIds.has(p.id);
     const disabled = !selected && team.length >= 6;
@@ -1088,8 +1420,12 @@ const TeamBuilder = ({
           "p-3",
           "focus:outline-none focus:ring-4 focus:ring-sky-200/60",
         ].join(" ")}
-        aria-label={selected ? `Remover ${p.name}` : `Adicionar ${p.name}`}
-        title={selected ? "Selecionado" : "Selecionar"}
+        aria-label={
+          selected
+            ? `${t(lang, "team.remove")} ${p.name}`
+            : `${t(lang, "team.select")} ${p.name}`
+        }
+        title={selected ? t(lang, "team.selected") : t(lang, "team.select")}
       >
         <div className="pointer-events-none absolute -top-10 -right-10 w-28 h-28 rounded-full bg-gradient-to-br from-cyan-200/35 via-fuchsia-200/25 to-amber-200/25 blur-2xl opacity-70" />
 
@@ -1124,17 +1460,16 @@ const TeamBuilder = ({
     );
   };
 
-  // NOVO: dock de busca + filtros (mesma estética do FilterDock)
+  // Dock: search + filters
   const TeamFilterDock = () => (
     <div className="sticky top-20 z-40 flex justify-center w-full px-4 mb-10">
       <div className="w-full max-w-4xl rounded-full p-1 bg-white/75 backdrop-blur-xl border border-white/60 shadow-[0_14px_40px_rgba(15,23,42,0.12)]">
         <div className="flex items-center gap-2 w-full">
-          {/* Busca */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
             <input
               type="text"
-              placeholder="Buscar Pokémon (nome ou número)..."
+              placeholder={t(lang, "team.filterSearchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={[
@@ -1146,11 +1481,12 @@ const TeamBuilder = ({
             />
           </div>
 
-          {/* Geração (select) */}
           <div className="hidden sm:block">
             <select
               value={regionFilter}
-              onChange={(e) => setRegionFilter(e.target.value as RegionKey | "all")}
+              onChange={(e) =>
+                setRegionFilter(e.target.value as RegionKey | "all")
+              }
               className={[
                 "rounded-full px-4 py-2 text-sm font-extrabold",
                 "bg-slate-50 text-slate-700",
@@ -1158,10 +1494,10 @@ const TeamBuilder = ({
                 "focus:outline-none focus:ring-2 focus:ring-sky-200/60 transition",
                 "cursor-pointer",
               ].join(" ")}
-              aria-label="Filtrar por geração"
-              title="Filtrar por geração"
+              aria-label="Filter by generation"
+              title="Filter by generation"
             >
-              <option value="all">Todas</option>
+              <option value="all">{t(lang, "team.filterAll")}</option>
               {REGIONS.map((r) => (
                 <option key={r.key} value={r.key}>
                   {r.label}
@@ -1170,7 +1506,6 @@ const TeamBuilder = ({
             </select>
           </div>
 
-          {/* Tipos (ícones) */}
           <div ref={typesRef} className="relative">
             <button
               onClick={() => setTypesOpen((v) => !v)}
@@ -1180,21 +1515,22 @@ const TeamBuilder = ({
                 "border border-transparent hover:bg-white",
                 "focus:outline-none focus:ring-2 focus:ring-sky-200/60 transition",
               ].join(" ")}
-              aria-label="Filtrar por tipos"
-              title="Filtrar por tipos"
+              aria-label="Filter by types"
+              title="Filter by types"
             >
-              {/* ícone “pilha” simples: usa TypeBadge pequeno se já houver seleção */}
               {typeFilters.length === 0 ? (
-                <span className="text-xs font-extrabold px-2">Tipos</span>
+                <span className="text-xs font-extrabold px-2">
+                  {t(lang, "team.filterTypes")}
+                </span>
               ) : (
                 <div className="flex items-center gap-1">
-                  {typeFilters.slice(0, 2).map((t) => (
+                  {typeFilters.slice(0, 2).map((tt) => (
                     <div
-                      key={t}
+                      key={tt}
                       className="w-7 h-7 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center"
-                      title={t}
+                      title={tt}
                     >
-                      <TypeBadge type={t} size="sm" />
+                      <TypeBadge type={tt} size="sm" />
                     </div>
                   ))}
                   {typeFilters.length > 2 && (
@@ -1217,7 +1553,7 @@ const TeamBuilder = ({
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="text-sm font-extrabold text-slate-800">
-                    Filtrar por tipos
+                    {t(lang, "team.filterTypesTitle")}
                   </div>
                   <button
                     onClick={() => setTypeFilters([])}
@@ -1230,17 +1566,17 @@ const TeamBuilder = ({
                       "focus:outline-none focus:ring-2 focus:ring-sky-200/60",
                     ].join(" ")}
                   >
-                    Limpar
+                    {t(lang, "team.clear")}
                   </button>
                 </div>
 
                 <div className="grid grid-cols-9 gap-2">
-                  {allTypes.map((t) => {
-                    const selected = typeFilters.includes(t);
+                  {allTypes.map((tt) => {
+                    const selected = typeFilters.includes(tt);
                     return (
                       <button
-                        key={t}
-                        onClick={() => toggleType(t)}
+                        key={tt}
+                        onClick={() => toggleType(tt)}
                         className={[
                           "w-9 h-9 rounded-full flex items-center justify-center",
                           "bg-white/75 border border-white/60 shadow-sm",
@@ -1248,10 +1584,10 @@ const TeamBuilder = ({
                           selected ? "ring-2 ring-sky-200/80" : "",
                           "focus:outline-none focus:ring-2 focus:ring-sky-200/60",
                         ].join(" ")}
-                        title={t}
-                        aria-label={`Tipo ${t}`}
+                        title={tt}
+                        aria-label={`Type ${tt}`}
                       >
-                        <TypeBadge type={t} size="sm" />
+                        <TypeBadge type={tt} size="sm" />
                       </button>
                     );
                   })}
@@ -1259,16 +1595,18 @@ const TeamBuilder = ({
 
                 <div className="mt-3 text-xs font-semibold text-slate-500">
                   {typeFilters.length === 0
-                    ? "Nenhum tipo selecionado."
-                    : `${typeFilters.length} tipo(s) selecionado(s).`}
+                    ? t(lang, "team.noTypesSelected")
+                    : I18N[lang].team.typesSelected(typeFilters.length)}
                 </div>
               </div>
             )}
           </div>
 
-          {/* Limpar filtros (compacto) */}
           <button
-            onClick={clearFilters}
+            onClick={() => {
+              clearFilters();
+              setSearchTerm("");
+            }}
             disabled={regionFilter === "all" && typeFilters.length === 0 && !searchTerm}
             className={[
               "hidden sm:inline-flex items-center justify-center",
@@ -1278,8 +1616,8 @@ const TeamBuilder = ({
               "disabled:opacity-50 disabled:cursor-not-allowed",
               "focus:outline-none focus:ring-2 focus:ring-sky-200/60",
             ].join(" ")}
-            title="Limpar busca e filtros"
-            aria-label="Limpar busca e filtros"
+            title={t(lang, "team.clearAllFilters")}
+            aria-label={t(lang, "team.clearAllFilters")}
           >
             <X size={16} />
           </button>
@@ -1294,24 +1632,29 @@ const TeamBuilder = ({
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/75 border border-white/60 shadow-sm">
           <Users className="w-4 h-4 text-slate-500" />
           <span className="text-sm font-extrabold text-slate-700">
-            Forme seu time
+            {t(lang, "team.badge")}
           </span>
         </div>
 
         <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 mt-6 mb-3">
-          Eu <span className="text-sky-600">escolho</span> você!
+          {t(lang, "team.title").split(" ").slice(0, -1).join(" ")}{" "}
+          <span className="text-sky-600">
+            {t(lang, "team.title").split(" ").slice(-1)}
+          </span>
         </h1>
         <p className="text-slate-600 max-w-2xl mx-auto">
-          Escolha até 6 Pokémon de qualquer geração.
+          {t(lang, "team.subtitle")}
         </p>
       </div>
 
-            {/* Toolbar fora do card do time */}
+      {/* Toolbar */}
       <div className="max-w-5xl mx-auto mt-10 flex items-center justify-between gap-3 flex-wrap">
         <div className="text-left">
-          <div className="text-sm font-extrabold text-slate-800">Seu time</div>
+          <div className="text-sm font-extrabold text-slate-800">
+            {t(lang, "team.yourTeam")}
+          </div>
           <div className="text-xs font-semibold text-slate-500 mt-1">
-            {team.length}/6 selecionados
+            {I18N[lang].team.selectedCount(team.length)}
           </div>
         </div>
 
@@ -1327,7 +1670,7 @@ const TeamBuilder = ({
             ].join(" ")}
           >
             <Info size={16} />
-            Estatísticas
+            {t(lang, "team.stats")}
           </button>
 
           <button
@@ -1343,7 +1686,9 @@ const TeamBuilder = ({
             ].join(" ")}
           >
             <Download size={16} />
-            {isDownloadingCard ? "Gerando..." : "Baixar card"}
+            {isDownloadingCard
+              ? t(lang, "team.generating")
+              : t(lang, "team.downloadCard")}
           </button>
 
           <button
@@ -1359,12 +1704,12 @@ const TeamBuilder = ({
             ].join(" ")}
           >
             <Trash2 size={16} />
-            Limpar time
+            {t(lang, "team.clearTeam")}
           </button>
         </div>
       </div>
 
-      {/* Card do time (capturado pelo html2canvas) */}
+      {/* Team card (captured by html2canvas) */}
       <div className="max-w-5xl mx-auto mt-4">
         <div
           ref={teamCardRef}
@@ -1377,16 +1722,16 @@ const TeamBuilder = ({
           </div>
         </div>
 
-        {/* Estatísticas (só aparece ao clicar) */}
+        {/* Stats */}
         {showStats && (
           <div className="mt-4 rounded-3xl border border-white/60 bg-white/75 backdrop-blur-xl shadow-sm p-6">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="text-left">
                 <div className="text-sm font-extrabold text-slate-900">
-                  Feedback do time
+                  {t(lang, "team.tipsTitle")}
                 </div>
                 <div className="text-xs font-semibold text-slate-500 mt-1">
-                  Dicas rápidas baseadas nos tipos e fraquezas do seu time.
+                  {t(lang, "team.tipsSubtitle")}
                 </div>
               </div>
 
@@ -1401,28 +1746,30 @@ const TeamBuilder = ({
                 ].join(" ")}
               >
                 <X size={16} />
-                Fechar
+                {t(lang, "team.close")}
               </button>
             </div>
 
             <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
                 <div className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                  Tipos no time
+                  {t(lang, "team.teamTypes")}
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {teamStats.typesSorted.length === 0 ? (
                     <div className="text-sm font-semibold text-slate-500">
-                      Nenhum Pokémon selecionado.
+                      {lang === "pt"
+                        ? "Nenhum Pokémon selecionado."
+                        : "No Pokémon selected."}
                     </div>
                   ) : (
-                    teamStats.typesSorted.map(([t, c]) => (
+                    teamStats.typesSorted.map(([tt, c]) => (
                       <div
-                        key={t}
+                        key={tt}
                         className="inline-flex items-center gap-2 bg-white rounded-full border border-slate-100 px-3 py-1.5 shadow-sm"
-                        title={`${t}: ${c}`}
+                        title={`${tt}: ${c}`}
                       >
-                        <TypeBadge type={t} size="sm" />
+                        <TypeBadge type={tt} size="sm" />
                         <span className="text-xs font-extrabold text-slate-700">
                           x{c}
                         </span>
@@ -1434,7 +1781,7 @@ const TeamBuilder = ({
 
               <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
                 <div className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                  Dicas
+                  {t(lang, "team.tips")}
                 </div>
                 <ul className="mt-3 space-y-2 text-sm font-semibold text-slate-700 list-disc pl-5">
                   {teamStats.suggestions.map((s, i) => (
@@ -1443,14 +1790,24 @@ const TeamBuilder = ({
                 </ul>
 
                 {teamStats.weaknessesSorted.length > 0 && (
-                  <div className="mt-4 text-xs font-semibold text-slate-500">
-                    Fraquezas mais frequentes:{" "}
-                    <span className="font-extrabold text-slate-700">
-                      {teamStats.weaknessesSorted
-                        .slice(0, 5)
-                        .map(([w, c]) => `${w} (${c})`)
-                        .join(", ")}
-                    </span>
+                  <div className="mt-4">
+                    <div className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
+                      {t(lang, "team.topWeaknesses")}
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {teamStats.weaknessesSorted.slice(0, 5).map(([w, c]) => (
+                        <div
+                          key={w}
+                          className="inline-flex items-center gap-2 bg-white rounded-full border border-slate-100 px-3 py-1.5 shadow-sm"
+                          title={`${w}: ${c}`}
+                        >
+                          <TypeBadge type={w} size="sm" />
+                          <span className="text-xs font-extrabold text-slate-700">
+                            x{c}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -1460,14 +1817,13 @@ const TeamBuilder = ({
       </div>
 
       <div className="mt-10">
-        {/* SUBSTITUI o FilterDock aqui */}
         <TeamFilterDock />
 
         <div className="text-center mb-8">
           <span className="inline-flex items-center gap-2 bg-white/75 px-4 py-2 rounded-full text-xs font-extrabold text-slate-600 border border-white/60 shadow-sm">
             {isLoadingAll
-              ? "Carregando lista completa…"
-              : `${filteredAll.length} Pokémon disponíveis`}
+              ? t(lang, "team.loadingAllTitle")
+              : I18N[lang].team.availableCount(filteredAll.length)}
           </span>
         </div>
 
@@ -1476,9 +1832,9 @@ const TeamBuilder = ({
             <div className="w-16 h-16 bg-white/80 border border-white/60 rounded-full flex items-center justify-center mb-4 shadow-sm">
               <Search size={22} />
             </div>
-            <p className="font-bold">Preparando todas as gerações…</p>
+            <p className="font-bold">{t(lang, "team.loadingAllTitle")}</p>
             <p className="text-xs mt-2 text-slate-400">
-              Isso pode levar alguns segundos no primeiro carregamento.
+              {t(lang, "team.loadingAllSubtitle")}
             </p>
           </div>
         ) : (
@@ -1500,10 +1856,10 @@ const TeamBuilder = ({
                 {list.length === 0 ? (
                   <div className="rounded-3xl border border-white/60 bg-white/70 backdrop-blur-xl p-10 text-center text-slate-500 shadow-sm">
                     <div className="font-extrabold">
-                      Nenhum Pokémon encontrado nesta geração
+                      {t(lang, "team.regionNoneFound")}
                     </div>
                     <div className="text-xs font-semibold text-slate-400 mt-2">
-                      Ajuste sua busca ou filtros.
+                      {t(lang, "team.adjustFilters")}
                     </div>
                   </div>
                 ) : (
@@ -1522,15 +1878,16 @@ const TeamBuilder = ({
   );
 };
 
-
 // ------------------------
-// Tipos
+// Types Page
 // ------------------------
 const TypesPage = ({
+  lang,
   allPokemon,
   isLoadingAll,
   onPokemonClick,
 }: {
+  lang: Lang;
   allPokemon: Pokemon[];
   isLoadingAll: boolean;
   onPokemonClick: (p: Pokemon) => void;
@@ -1540,14 +1897,14 @@ const TypesPage = ({
 
   const allTypes = useMemo(() => {
     const types = new Set<string>();
-    allPokemon.forEach((p) => p.type.forEach((t) => types.add(t)));
+    allPokemon.forEach((p) => p.type.forEach((tt) => types.add(tt)));
     return Array.from(types).sort((a, b) => a.localeCompare(b));
   }, [allPokemon]);
 
   const allTypesFiltered = useMemo(() => {
     if (!typeSearch) return allTypes;
     const lower = typeSearch.toLowerCase();
-    return allTypes.filter((t) => t.toLowerCase().includes(lower));
+    return allTypes.filter((tt) => tt.toLowerCase().includes(lower));
   }, [typeSearch, allTypes]);
 
   const filteredByType = useMemo(() => {
@@ -1559,18 +1916,19 @@ const TypesPage = ({
     return (
       <div className="container mx-auto px-4 py-20 pb-28 text-center">
         <div className="inline-flex items-center gap-2 bg-white/75 px-4 py-2 rounded-full text-xs font-extrabold text-slate-600 border border-white/60 shadow-sm">
-          Carregando Pokédex completa…
+          {t(lang, "common.loadingPokemon")}
         </div>
         <div className="mt-10 text-slate-500 font-semibold">
-          Preparando dados de todas as regiões (cache local ajuda a acelerar).
+          {lang === "pt"
+            ? "Preparando dados de todas as regiões (cache local ajuda a acelerar)."
+            : "Preparing all regions data (local cache can speed this up)."}
         </div>
       </div>
     );
   }
 
   if (selectedType) {
-    const desc =
-      TYPE_DESCRIPTIONS[selectedType] || "Tipo elemental do universo Pokémon.";
+    const desc = typeDescription(lang, selectedType) || t(lang, "types.infoDefault");
 
     return (
       <div className="container mx-auto px-4 py-10 pb-24">
@@ -1578,7 +1936,7 @@ const TypesPage = ({
           onClick={() => setSelectedType(null)}
           className="inline-flex items-center gap-2 mb-8 text-slate-600 hover:text-sky-700 transition-colors font-extrabold"
         >
-          <ArrowLeft size={20} /> Voltar aos Tipos
+          <ArrowLeft size={20} /> {t(lang, "types.backToTypes")}
         </button>
 
         <div className="max-w-3xl mx-auto text-center mb-10">
@@ -1586,7 +1944,7 @@ const TypesPage = ({
             <TypeBadge type={selectedType} size="lg" />
           </div>
           <h2 className="text-3xl font-extrabold text-slate-900">
-            Pokémon do tipo {TYPE_TRANSLATIONS[selectedType] || selectedType}
+            {I18N[lang].types.typeOf(typeLabel(lang, selectedType))}
           </h2>
 
           <div className="mt-4 inline-flex items-start gap-3 text-left bg-white/75 border border-white/60 rounded-2xl p-5 shadow-sm">
@@ -1599,7 +1957,7 @@ const TypesPage = ({
           </div>
 
           <p className="text-slate-600 mt-5 font-semibold">
-            {filteredByType.length} Pokémon encontrados.
+            {I18N[lang].types.found(filteredByType.length)}
           </p>
         </div>
 
@@ -1618,32 +1976,31 @@ const TypesPage = ({
 
   return (
     <div className="container mx-auto px-4 py-16 pb-24 text-center">
-      <h2 className="text-4xl font-extrabold text-slate-900 mb-4">Tipos</h2>
-      <p className="text-slate-600 mb-10">
-        Selecione um elemento para ver todos os Pokémon desse tipo (todas as
-        regiões).
-      </p>
+      <h2 className="text-4xl font-extrabold text-slate-900 mb-4">
+        {t(lang, "types.title")}
+      </h2>
+      <p className="text-slate-600 mb-10">{t(lang, "types.subtitle")}</p>
 
       <div className="max-w-md mx-auto mb-6">
         <FilterDock
           searchTerm={typeSearch}
           setSearchTerm={setTypeSearch}
-          placeholder="Buscar tipo..."
+          placeholder={t(lang, "types.searchPlaceholder")}
         />
       </div>
 
       <div className="grid grid-cols-5 gap-6 max-w-6xl mx-auto">
-        {allTypesFiltered.map((type: string) => (
+        {allTypesFiltered.map((tt) => (
           <button
-            key={type}
+            key={tt}
             className="flex flex-col items-center gap-2 group"
-            onClick={() => setSelectedType(type)}
+            onClick={() => setSelectedType(tt)}
           >
             <div className="group-hover:-translate-y-2 transition-transform duration-200">
-              <TypeBadge type={type} size="xl" />
+              <TypeBadge type={tt} size="xl" />
             </div>
             <span className="font-extrabold text-slate-700 group-hover:text-sky-700 transition-colors text-center text-sm">
-              {TYPE_TRANSLATIONS[type] || type}
+              {typeLabel(lang, tt)}
             </span>
           </button>
         ))}
@@ -1652,53 +2009,52 @@ const TypesPage = ({
   );
 };
 
-const AboutPage = () => (
+const AboutPage = ({ lang }: { lang: Lang }) => (
   <div className="container mx-auto px-4 py-20 pb-28 flex flex-col items-center text-center">
     <div className="w-20 h-20 bg-white/80 border border-white/60 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
       <img src={iconPng} alt="PokédexPro" className="w-12 h-12 object-contain" />
     </div>
     <h2 className="text-4xl font-extrabold text-slate-900 mb-6">
-      Sobre o Projeto
+      {t(lang, "about.title")}
     </h2>
     <div className="max-w-2xl bg-white/75 p-10 rounded-3xl border border-white/60 shadow-[0_18px_55px_rgba(15,23,42,0.10)]">
       <p className="text-lg text-slate-700 leading-relaxed">
-        PokédexPro é um projeto desenvolvido para um trabalho acadêmico da
-        disciplina de{" "}
-        <span className="font-extrabold text-sky-600">Banco de Dados</span> pela{" "}
-        <span className="font-extrabold text-slate-900">UFERSA</span>.
+        {t(lang, "about.body1")}
       </p>
       <div className="w-16 h-1 bg-slate-100 mx-auto my-8"></div>
       <p className="text-sm text-slate-600 font-semibold">
-        Desenvolvido com React, Tailwind CSS e muita dedicação.
+        {t(lang, "about.body2")}
       </p>
     </div>
   </div>
 );
 
-const Footer = () => (
+const Footer = ({ lang }: { lang: Lang }) => (
   <footer className="mt-auto py-10">
     <div className="container mx-auto px-6 text-center">
       <p className="text-slate-600 font-semibold mb-2">
-        Este é um projeto realizado por fãs sem fins lucrativos.
+        {t(lang, "common.fansNotice")}
       </p>
-      <p className="text-slate-500 text-sm">© 2025 PokédexPro.</p>
+      <p className="text-slate-500 text-sm">{t(lang, "common.copyright")}</p>
     </div>
   </footer>
 );
 
 // ------------------------
-// Evolução: cache
+// Evolution: cache
 // ------------------------
 type EvoCacheEntry = { prev: EvoRef[]; next: EvoRef[]; nextChain: EvoRef[] };
 type EvoCache = Record<number, EvoCacheEntry>;
 
 const PokemonModal = ({
+  lang,
   pokemon,
   onClose,
   onSelect,
   lookupByNum,
   evolutionFor,
 }: {
+  lang: Lang;
   pokemon: Pokemon | null;
   onClose: () => void;
   onSelect: (p: Pokemon) => void;
@@ -1729,12 +2085,12 @@ const PokemonModal = ({
           {img ? (
             <img src={img} className="w-10 h-10" alt={ref.name} />
           ) : (
-            <span className="text-xs text-slate-400">?</span>
+            <span className="text-xs text-slate-400">
+              {t(lang, "common.placeholderUnknown")}
+            </span>
           )}
         </div>
-        <span className="text-xs font-extrabold text-slate-600">
-          {ref.name}
-        </span>
+        <span className="text-xs font-extrabold text-slate-600">{ref.name}</span>
       </button>
     );
   };
@@ -1755,7 +2111,8 @@ const PokemonModal = ({
         <button
           onClick={onClose}
           className="absolute top-6 right-6 z-20 p-2 rounded-full bg-white/80 hover:bg-white text-slate-600 shadow-sm transition"
-          aria-label="Fechar"
+          aria-label={t(lang, "common.close")}
+          title={t(lang, "common.close")}
         >
           <X size={20} />
         </button>
@@ -1778,11 +2135,11 @@ const PokemonModal = ({
           />
 
           <div className="flex gap-4 mt-8 relative z-10">
-            {pokemon.type.map((t: string) => (
-              <div key={t} className="flex flex-col items-center gap-2">
-                <TypeBadge type={t} size="lg" />
+            {pokemon.type.map((tt: string) => (
+              <div key={tt} className="flex flex-col items-center gap-2">
+                <TypeBadge type={tt} size="lg" />
                 <span className="text-xs font-extrabold text-slate-500 uppercase tracking-widest">
-                  {t}
+                  {typeLabel(lang, tt)}
                 </span>
               </div>
             ))}
@@ -1794,31 +2151,27 @@ const PokemonModal = ({
             <h2 className="text-4xl font-extrabold text-slate-900 mb-2">
               {pokemon.name}
             </h2>
-            <p className="text-slate-500 font-medium">Espécie de Pokémon</p>
+            <p className="text-slate-500 font-medium">{t(lang, "modal.species")}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-8">
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2 text-slate-500 text-xs font-extrabold uppercase tracking-wider mb-1">
-                <Ruler size={14} /> Altura
+                <Ruler size={14} /> {t(lang, "modal.height")}
               </div>
-              <p className="text-xl font-bold text-slate-800">
-                {pokemon.height}
-              </p>
+              <p className="text-xl font-bold text-slate-800">{pokemon.height}</p>
             </div>
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
               <div className="flex items-center gap-2 text-slate-500 text-xs font-extrabold uppercase tracking-wider mb-1">
-                <Weight size={14} /> Peso
+                <Weight size={14} /> {t(lang, "modal.weight")}
               </div>
-              <p className="text-xl font-bold text-slate-800">
-                {pokemon.weight}
-              </p>
+              <p className="text-xl font-bold text-slate-800">{pokemon.weight}</p>
             </div>
           </div>
 
           <div className="mb-8">
             <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest mb-4">
-              Fraquezas
+              {t(lang, "modal.weaknesses")}
             </h3>
             <div className="flex flex-wrap gap-3">
               {pokemon.weaknesses.map((w: string) => (
@@ -1827,7 +2180,9 @@ const PokemonModal = ({
                   className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-100 shadow-sm"
                 >
                   <TypeBadge type={w} size="sm" />
-                  <span className="text-sm font-bold text-slate-700">{w}</span>
+                  <span className="text-sm font-bold text-slate-700">
+                    {typeLabel(lang, w)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -1836,7 +2191,7 @@ const PokemonModal = ({
           {evo && (evo.prev.length > 0 || nextToShow.length > 0) && (
             <div>
               <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest mb-4">
-                Cadeia de Evolução
+                {t(lang, "modal.evolution")}
               </h3>
 
               <div className="flex items-center gap-4 overflow-x-auto pb-2">
@@ -1855,9 +2210,7 @@ const PokemonModal = ({
                       alt={pokemon.name}
                       onError={(e) => {
                         const idNum = Number(pokemon.num);
-                        (e.target as HTMLImageElement).src = Number.isFinite(
-                          idNum
-                        )
+                        (e.target as HTMLImageElement).src = Number.isFinite(idNum)
                           ? toSerebiiImg(idNum)
                           : "https://via.placeholder.com/64?text=?";
                       }}
@@ -1887,11 +2240,12 @@ const PokemonModal = ({
 // App
 // ------------------------
 const App = () => {
-  const [view, setView] = useState<
-    "region" | "home" | "types" | "about" | "team"
-  >("region");
+  const [lang, setLang] = useState<Lang>("pt");
 
-  // Região selecionada (home)
+  const [view, setView] = useState<"region" | "home" | "types" | "about" | "team">(
+    "region"
+  );
+
   const [region, setRegion] = useState<RegionKey>("kanto");
   const [regionPokemon, setRegionPokemon] = useState<Pokemon[]>([]);
   const [filteredRegionPokemon, setFilteredRegionPokemon] = useState<Pokemon[]>(
@@ -1900,27 +2254,20 @@ const App = () => {
   const [isLoadingRegion, setIsLoadingRegion] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Pokédex completa (todas as regiões) — usada por Tipos e Time e também para evolução/lookup
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [isLoadingAll, setIsLoadingAll] = useState(false);
 
-  // Team
   const [team, setTeam] = useState<Pokemon[]>([]);
 
-  // Modal
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
 
-  // Evolução (cache)
   const [evoCache, setEvoCache] = useState<EvoCache>({});
 
   const regionLabel = useMemo(() => {
     const r = REGIONS.find((x) => x.key === region);
-    return r ? r.label : "Região";
+    return r ? r.label : "Region";
   }, [region]);
 
-  // ------------------------
-  // Load: região (home)
-  // ------------------------
   const loadRegion = async (rKey: RegionKey) => {
     const r = REGIONS.find((x) => x.key === rKey)!;
 
@@ -1938,9 +2285,6 @@ const App = () => {
     }
   };
 
-  // ------------------------
-  // Load: todas as regiões (para Tipos, Time e evolução universal)
-  // ------------------------
   const loadAllRegions = async () => {
     if (isLoadingAll) return;
     setIsLoadingAll(true);
@@ -1968,7 +2312,6 @@ const App = () => {
     }
   };
 
-  // Ao entrar em Tipos, garante pokédex completa
   useEffect(() => {
     if (view === "types" && allPokemon.length === 0) {
       void loadAllRegions();
@@ -1976,9 +2319,6 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
 
-  // ------------------------
-  // Filtro (home)
-  // ------------------------
   useEffect(() => {
     let result = regionPokemon;
     if (searchTerm) {
@@ -1990,10 +2330,6 @@ const App = () => {
     setFilteredRegionPokemon(result);
   }, [searchTerm, regionPokemon]);
 
-  // ------------------------
-  // Evolução via PokeAPI (para qualquer geração)
-  // API citada: https://pokeapi.co (pokemon-species + evolution_chain)
-  // ------------------------
   const fetchEvolutionForPokemon = async (p: Pokemon) => {
     const hasLocalEvo = Boolean(
       (p as any).prev_evolution?.length || (p as any).next_evolution?.length
@@ -2042,7 +2378,9 @@ const App = () => {
               typeof child?.species?.name === "string"
                 ? formatName(child.species.name)
                 : "";
-            return cid ? { num: pad3(cid), name: cname || `#${pad3(cid)}` } : null;
+            return cid
+              ? { num: pad3(cid), name: cname || `#${pad3(cid)}` }
+              : null;
           })
           .filter(Boolean) as EvoRef[];
 
@@ -2100,7 +2438,7 @@ const App = () => {
         },
       }));
     } catch {
-      // silencioso
+      // silent
     }
   };
 
@@ -2110,9 +2448,6 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPokemon?.id]);
 
-  // ------------------------
-  // Lookups
-  // ------------------------
   const lookupByNum = (num: string): Pokemon | null => {
     const fromAll = allPokemon.find((p) => p.num === num);
     if (fromAll) return fromAll;
@@ -2143,12 +2478,10 @@ const App = () => {
     return cached;
   };
 
-  // Header strip: só mostra quando estiver na Home (muda conforme região)
   const headerRegionStrip = view === "home" ? region : undefined;
 
   return (
     <div className="min-h-screen font-sans text-slate-800 flex flex-col bg-gradient-to-br from-sky-50 via-white to-fuchsia-50">
-      {/* Easter egg: fundo sutil muda com a região quando em Home; no resto mantém neutro */}
       {view === "home" ? (
         <RegionEasterEgg regionKey={region} />
       ) : (
@@ -2160,6 +2493,8 @@ const App = () => {
       )}
 
       <Header
+        lang={lang}
+        setLang={setLang}
         setView={setView}
         currentView={view}
         regionKeyForEasterEgg={headerRegionStrip}
@@ -2167,6 +2502,7 @@ const App = () => {
 
       {view === "region" && (
         <RegionSelect
+          lang={lang}
           onCreateTeam={async () => {
             setSelectedPokemon(null);
             setView("team");
@@ -2181,6 +2517,7 @@ const App = () => {
 
       {view === "team" && (
         <TeamBuilder
+          lang={lang}
           allPokemon={allPokemon}
           isLoadingAll={isLoadingAll}
           ensureAllLoaded={() => void loadAllRegions()}
@@ -2191,6 +2528,7 @@ const App = () => {
 
       {view === "home" && (
         <Home
+          lang={lang}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           filteredPokemon={filteredRegionPokemon}
@@ -2202,17 +2540,19 @@ const App = () => {
 
       {view === "types" && (
         <TypesPage
+          lang={lang}
           allPokemon={allPokemon}
           isLoadingAll={isLoadingAll}
           onPokemonClick={setSelectedPokemon}
         />
       )}
 
-      {view === "about" && <AboutPage />}
+      {view === "about" && <AboutPage lang={lang} />}
 
-      <Footer />
+      <Footer lang={lang} />
 
       <PokemonModal
+        lang={lang}
         pokemon={selectedPokemon}
         onClose={() => setSelectedPokemon(null)}
         onSelect={setSelectedPokemon}
